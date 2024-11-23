@@ -1,0 +1,10 @@
+package com.evently.evently.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.evently.evently.entities.Event;
+
+@Repository
+public interface EventRepository extends JpaRepository<Event, Long> {
+}

@@ -1,16 +1,16 @@
 services:
-  backend: 
-    build: 
-      context: .
-    container_name: backend-container
-    depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=naruto92
-    ports:
-      - 8080:8080
+  # backend: 
+  #   build: 
+  #     context: .
+  #   container_name: backend-container
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+  #     - SPRING_DATASOURCE_USERNAME=postgres
+  #     - SPRING_DATASOURCE_PASSWORD=naruto92
+  #   ports:
+  #     - 8080:8080
   db:
     image: "postgres"
     container_name: postgres-container
@@ -18,3 +18,5 @@ services:
       - "POSTGRES_DB=postgres"
       - "POSTGRES_PASSWORD=naruto92"
       - "POSTGRES_USER=postgres"
+    ports:
+      - 5432
