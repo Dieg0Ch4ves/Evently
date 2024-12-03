@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,7 +26,7 @@ public class User implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  private UUID id;
 
   private String name;
 
@@ -50,6 +51,13 @@ public class User implements UserDetails {
   @Override
   public String getUsername() {
     return email;
+  }
+
+  public User(String name, String email, String encryptedPassword, UserRole role) {
+    this.name = name;
+    this.email = email;
+    this.password = encryptedPassword;
+    this.role = role;
   }
 
 }
