@@ -17,11 +17,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Entity
-@Data
 @Table(name = "users")
+@Entity(name = "User")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
 public class User implements UserDetails {
 
   @Id
@@ -36,6 +42,7 @@ public class User implements UserDetails {
 
   private UserRole role;
 
+  @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<EventRegistration> registrations = new HashSet<>();
 
@@ -51,6 +58,26 @@ public class User implements UserDetails {
   @Override
   public String getUsername() {
     return email;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
   }
 
   public User(String name, String email, String encryptedPassword, UserRole role) {

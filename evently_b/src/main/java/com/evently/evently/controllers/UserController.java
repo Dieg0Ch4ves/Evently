@@ -79,7 +79,8 @@ public class UserController {
       return ResponseEntity.badRequest().build();
     }
 
-    UserDetails user = repository.findByEmail(username);
+    UserDetails user = repository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     if (user == null) {
       return ResponseEntity.notFound().build();
     }
