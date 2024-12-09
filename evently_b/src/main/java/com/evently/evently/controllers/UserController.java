@@ -56,7 +56,9 @@ public class UserController {
   // End-point de cadastro
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody RegisterRequestDTO data) {
-    if (repository.findByEmail(data.email()) != null) {
+    User existUser = repository.findByEmail(data.email()).orElse(null);
+
+    if (existUser != null) {
       return ResponseEntity.badRequest().body("E-mail já cadastrado!");
     }
 
