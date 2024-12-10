@@ -23,7 +23,7 @@ CREATE TABLE public.event (
 );
 
 CREATE TABLE public.events_registrations (
-  id BIGINT PRIMARY KEY,
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id UUID NOT NULL,
   event_id BIGINT NOT NULL,
   registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

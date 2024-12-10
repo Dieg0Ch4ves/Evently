@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.evently.evently.dtos.AuthenticationRequestDTO;
 import com.evently.evently.dtos.AuthenticationResponseDTO;
 import com.evently.evently.dtos.RegisterRequestDTO;
+import com.evently.evently.dtos.UserResponseDTO;
 import com.evently.evently.entities.User;
 import com.evently.evently.repositories.UserRepository;
 import com.evently.evently.service.TokenService;
@@ -73,7 +73,7 @@ public class UserController {
   // End-point para obter o objeto do usuario através do token
   // de acesso.
   @GetMapping("/user")
-  public ResponseEntity<UserDetails> getUserFromToken(HttpServletRequest request) {
+  public ResponseEntity<UserResponseDTO> getUserFromToken(HttpServletRequest request) {
     String token = extractTokenFromRequest(request);
     String username = tokenService.validateToken(token);
 
@@ -81,13 +81,13 @@ public class UserController {
       return ResponseEntity.badRequest().build();
     }
 
-    UserDetails user = repository.findByEmail(username)
+    User user = repository.findByEmail(username)
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     if (user == null) {
       return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole()));
   }
 
   // Metodo de extração de token

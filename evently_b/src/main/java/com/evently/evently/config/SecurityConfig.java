@@ -33,6 +33,11 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
             .requestMatchers(HttpMethod.GET, "/ping").permitAll()
+            .requestMatchers(
+                "/v3/api-docs/**", // Documentação OpenAPI (JSON)
+                "/swagger-ui/**", // Recursos do Swagger UI
+                "/swagger-ui.html" // Página principal do Swagger UI
+            ).permitAll()
             // .requestMatchers(HttpMethod.GET, "/**").permitAll()
             .anyRequest().authenticated())
         .cors(cors -> cors
