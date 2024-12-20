@@ -1,5 +1,8 @@
 package com.evently.evently.controllers;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.evently.evently.dtos.AuthenticationRequestDTO;
 import com.evently.evently.dtos.AuthenticationResponseDTO;
+import com.evently.evently.dtos.EventRegistrationResponseDTO;
 import com.evently.evently.dtos.RegisterRequestDTO;
 import com.evently.evently.dtos.UserResponseDTO;
+import com.evently.evently.entities.EventRegistration;
 import com.evently.evently.entities.User;
 import com.evently.evently.repositories.UserRepository;
 import com.evently.evently.service.TokenService;
@@ -87,7 +92,16 @@ public class UserController {
       return ResponseEntity.notFound().build();
     }
 
-    return ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole()));
+    Set<EventRegistrationResponseDTO> eventRegistrationsDTO = new HashSet<>();
+    for (EventRegistration eventRegistration : user.getRegistrations()) {
+      EventRegistrationResponseDTO eventRegistrationDTO = new EventRegistrationResponseDTO(eventRegistration.getId(),
+          eventRegistration.getEvent().getId(), eventRegistration.getUser().getId(),
+          eventRegistration.getRegistrationDate());
+      eventRegistrationsDTO.add(eventRegistrationDTO);
+    }
+
+    return ResponseEntity
+        .ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO));
   }
 
   // Metodo de extração de token

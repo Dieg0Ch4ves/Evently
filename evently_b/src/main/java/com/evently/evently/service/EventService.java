@@ -3,11 +3,13 @@ package com.evently.evently.service;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.evently.evently.dtos.EventRegistrationResponseDTO;
 import com.evently.evently.dtos.EventRequestDTO;
 import com.evently.evently.dtos.EventResponseDTO;
 import com.evently.evently.entities.Event;
@@ -28,7 +30,7 @@ public class EventService {
   }
 
   public List<EventResponseDTO> getAllEvents() {
-    return eventRepository.findAll().stream()
+    return eventRepository.findAllWithRegistrations().stream()
         .map(this::toResponseDTO)
         .collect(Collectors.toList());
   }
@@ -106,9 +108,25 @@ public class EventService {
   }
 
   private EventResponseDTO toResponseDTO(Event event) {
-    EventResponseDTO dto = new EventResponseDTO(event.getId(), event.getTitle(), event.getDescription(),
-        event.getDateEvent(), event.getLocalEvent(), event.getCapacity(), event.getDescription(),
-        event.getRegistrations(), event.getCreatedDate());
-    return dto;
+    Set<EventRegistrationResponseDTO> registrationDTOs = event.getRegistrations().stream()
+        .map(registration -> new EventRegistrationResponseDTO(
+            registration.getId(),
+            registration.getEvent().getId(),
+            registration.getUser().getId(),
+            registration.getRegistrationDate()))
+        .collect(Collectors.toSet());
+
+    return new EventResponseDTO(
+        event.getId(),
+        event.getTitle(),
+        event.getDescription(),
+        event.getDateEvent(),
+        event.getLocalEvent(),
+        event.getCapacity(),
+        event.getImage() != null ? Base64.getEncoder().encodeToString(event.getImage()) : null,
+        registrationDTOs,
+        event.getCreatedDate(),
+        event.getCreatedBy().getId());
   }
+
 }

@@ -11,6 +11,7 @@ import com.evently.evently.dtos.EventRegistrationResponseDTO;
 import com.evently.evently.entities.Event;
 import com.evently.evently.entities.EventRegistration;
 import com.evently.evently.entities.User;
+import com.evently.evently.exceptions.UserAlreadyRegisteredException;
 import com.evently.evently.repositories.EventRegistrationRepository;
 import com.evently.evently.repositories.EventRepository;
 import com.evently.evently.repositories.UserRepository;
@@ -38,6 +39,10 @@ public class EventRegistrationService {
 
     Event event = eventOpt.get();
     User user = userOpt.get();
+
+    if (eventRegistrationRepository.findByUserAndEvent(user, event) != null) {
+      throw new UserAlreadyRegisteredException("O usuário já se inscreveu neste evento!");
+    }
 
     EventRegistration registration = new EventRegistration();
     registration.setEvent(event);

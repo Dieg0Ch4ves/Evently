@@ -87,4 +87,8 @@ public class User implements UserDetails {
     this.role = role;
   }
 
+  public Set<EventRegistration> getRegistrations() {
+    return registrations;
+  }
+
 }
