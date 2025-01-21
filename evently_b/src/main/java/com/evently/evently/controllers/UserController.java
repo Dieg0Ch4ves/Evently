@@ -2,6 +2,7 @@ package com.evently.evently.controllers;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +74,7 @@ public class UserController {
 
     this.repository.save(newUser);
 
-    return ResponseEntity.ok().body("Usuário cadastrado com sucesso!");
+    return ResponseEntity.status(201).body("Usuário cadastrado com sucesso!");
   }
 
   // End-point para obter o objeto do usuario através do token
@@ -87,6 +89,26 @@ public class UserController {
     }
 
     User user = repository.findByEmail(username)
+        .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+    if (user == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    Set<EventRegistrationResponseDTO> eventRegistrationsDTO = new HashSet<>();
+    for (EventRegistration eventRegistration : user.getRegistrations()) {
+      EventRegistrationResponseDTO eventRegistrationDTO = new EventRegistrationResponseDTO(eventRegistration.getId(),
+          eventRegistration.getEvent().getId(), eventRegistration.getUser().getId(),
+          eventRegistration.getRegistrationDate());
+      eventRegistrationsDTO.add(eventRegistrationDTO);
+    }
+
+    return ResponseEntity
+        .ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO));
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponseDTO> getUserById(@PathVariable UUID id) {
+    User user = repository.findById(id)
         .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     if (user == null) {
       return ResponseEntity.notFound().build();

@@ -19,7 +19,7 @@ const NotFound = () => {
       alignItems={"center"}
     >
       <Typography variant="body1">
-        ⚠️ Pagina não encontrada ou não existe! ⚠️
+        ⚠️ Pagina não encontrada ou não existente! ⚠️
       </Typography>
 
       <Button onClick={handleBackToHome} variant="contained" color="primary">

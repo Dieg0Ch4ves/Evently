@@ -32,6 +32,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
             .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+            .requestMatchers(HttpMethod.GET, "/event/all").permitAll()
             .requestMatchers(HttpMethod.GET, "/ping").permitAll()
             .requestMatchers(
                 "/v3/api-docs/**", // Documentação OpenAPI (JSON)
@@ -43,7 +44,7 @@ public class SecurityConfig {
         .cors(cors -> cors
             .configurationSource(request -> {
               CorsConfiguration config = new CorsConfiguration();
-              config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+              config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
               config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
               config.addAllowedHeader("*");
               config.addAllowedMethod("*");

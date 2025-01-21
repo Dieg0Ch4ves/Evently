@@ -1,7 +1,10 @@
 import { AppBar, Button, Stack, Toolbar, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Header = () => {
+  const { user, logout } = useAuth();
+
   const navigate = useNavigate();
 
   return (
@@ -10,6 +13,7 @@ const Header = () => {
         <Typography
           variant="h5"
           component="div"
+          onClick={() => navigate("/")}
           sx={{ flexGrow: 1, fontWeight: "bold" }}
         >
           Evently
@@ -17,15 +21,26 @@ const Header = () => {
 
         {/* Navegação */}
         <Stack direction="row" spacing={2}>
-          <Button onClick={() => navigate("login")} color="inherit">
+          <Button onClick={() => navigate("/login")} color="inherit">
             Entrar
           </Button>
-          <Button onClick={() => navigate("register")} color="inherit">
+          <Button onClick={() => navigate("/register")} color="inherit">
             Cadastre-se
           </Button>
-          <Button onClick={() => navigate("about")} color="inherit">
+          <Button onClick={() => navigate("/about")} color="inherit">
             Sobre
           </Button>
+
+          {user ? (
+            <>
+              <Button color="inherit" onClick={() => navigate("/dashboard")}>
+                Dashboard
+              </Button>
+              <Button color="inherit" onClick={logout}>
+                Sair
+              </Button>
+            </>
+          ) : null}
         </Stack>
       </Toolbar>
     </AppBar>
