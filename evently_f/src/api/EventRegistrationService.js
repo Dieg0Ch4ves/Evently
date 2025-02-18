@@ -1,6 +1,8 @@
 import apiClient from "./apiClient";
 
 const EventRegistrationService = () => {
+  // ============================ FUNCTION SUBSCRIBE EVENT ============================ |
+
   const handleSubscribeEvent = async (eventId, userId) => {
     try {
       const response = await apiClient.post(
@@ -12,6 +14,9 @@ const EventRegistrationService = () => {
       throw new Error(error.response?.data || "Erro ao se inscrever no evento");
     }
   };
+
+  // ============================ FUNCTION UNSUBSCRIBE EVENT ============================ |
+
   const handleUnsubscribeEvent = async (registrationId) => {
     try {
       const response = await apiClient.post(

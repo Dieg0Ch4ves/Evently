@@ -1,11 +1,19 @@
 import { Button, Paper, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import FormatDate from "../../utils/FormatDate";
 
 const BoxEvent = ({ event }) => {
   const navigate = useNavigate("");
 
-  console.log(event);
+  const { formatDateTime } = FormatDate();
+
+  const truncateDescription = (description, limit) => {
+    if (description.length > limit) {
+      return description.substring(0, limit) + "...";
+    }
+    return description;
+  };
 
   return (
     <Stack component={Paper} elevation={3} width={500} spacing={2} padding={2}>
@@ -20,12 +28,18 @@ const BoxEvent = ({ event }) => {
         alt=""
       />
 
-      <Typography variant="subtitle1">{event.description}</Typography>
+      <Stack>
+        <Typography variant="subtitle1">
+          {truncateDescription(event.description, 100)}
+        </Typography>
+      </Stack>
 
       <Stack direction={"row"} justifyContent={"space-between"}>
         <Typography>
           Data do Evento:{" "}
-          <span style={{ fontWeight: "bold" }}>{event.dateEvent}</span>
+          <span style={{ fontWeight: "bold" }}>
+            {event.dateEvent ? formatDateTime(event.dateEvent) : "N/A"}
+          </span>
         </Typography>
         <Typography>
           Capacidade:{" "}

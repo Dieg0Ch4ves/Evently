@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ public class EventController {
   // ================ GET REQUESTS ================ |
 
   @GetMapping("/all")
+  @Transactional
   public ResponseEntity<List<EventResponseDTO>> getAll() throws Exception {
     try {
       List<EventResponseDTO> response = service.getAllEvents();
@@ -41,6 +43,16 @@ public class EventController {
   public ResponseEntity<?> getById(@PathVariable Long id) throws Exception {
     try {
       EventResponseDTO response = service.getEventById(id);
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(e);
+    }
+  }
+
+  @GetMapping("/get-by-user/{id}")
+  public ResponseEntity<?> getByIdUser(@PathVariable UUID id) throws Exception {
+    try {
+      List<EventResponseDTO> response = service.getEventByIdUser(id);
       return ResponseEntity.ok(response);
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(e);

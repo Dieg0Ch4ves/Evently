@@ -19,109 +19,109 @@ import jakarta.persistence.Table;
 @Table(name = "event")
 public class Event {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String title;
+    private String title;
 
-  private String description;
+    private String description;
 
-  private LocalDateTime dateEvent;
+    private LocalDateTime dateEvent;
 
-  private String localEvent;
+    private String localEvent;
 
-  private Long capacity;
+    private Long capacity;
 
-  private byte[] image;
+    private byte[] image;
 
-  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-  private Set<EventRegistration> registrations = new HashSet<>();
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<EventRegistration> registrations = new HashSet<>();
 
-  private LocalDateTime createdDate;
+    private LocalDateTime createdDate;
 
-  @ManyToOne
-  @JoinColumn(name = "created_by", nullable = false)
-  private User createdBy;
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
-  public Long getId() {
-    return id;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  public LocalDateTime getDateEvent() {
-    return dateEvent;
-  }
+    public LocalDateTime getDateEvent() {
+        return dateEvent;
+    }
 
-  public void setDateEvent(LocalDateTime dateEvent) {
-    this.dateEvent = dateEvent;
-  }
+    public void setDateEvent(LocalDateTime dateEvent) {
+        this.dateEvent = dateEvent;
+    }
 
-  public String getLocalEvent() {
-    return localEvent;
-  }
+    public String getLocalEvent() {
+        return localEvent;
+    }
 
-  public void setLocalEvent(String localEvent) {
-    this.localEvent = localEvent;
-  }
+    public void setLocalEvent(String localEvent) {
+        this.localEvent = localEvent;
+    }
 
-  public Long getCapacity() {
-    return capacity;
-  }
+    public Long getCapacity() {
+        return capacity;
+    }
 
-  public void setCapacity(Long capacity) {
-    this.capacity = capacity;
-  }
+    public void setCapacity(Long capacity) {
+        this.capacity = capacity;
+    }
 
-  public byte[] getImage() {
-    return image;
-  }
+    public byte[] getImage() {
+        return image;
+    }
 
-  public void setImage(byte[] image) {
-    this.image = image;
-  }
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 
-  public Set<EventRegistration> getRegistrations() {
-    return registrations;
-  }
+    public Set<EventRegistration> getRegistrations() {
+        return registrations;
+    }
 
-  public void setRegistrations(Set<EventRegistration> registrations) {
-    this.registrations = registrations;
-  }
+    public void setRegistrations(Set<EventRegistration> registrations) {
+        this.registrations = registrations;
+    }
 
-  public LocalDateTime getCreatedDate() {
-    return createdDate;
-  }
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
 
-  public void setCreatedDate(LocalDateTime createdDate) {
-    this.createdDate = createdDate;
-  }
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
 
-  public User getCreatedBy() {
-    return createdBy;
-  }
+    public User getCreatedBy() {
+        return createdBy;
+    }
 
-  public void setCreatedBy(User createdBy) {
-    this.createdBy = createdBy;
-  }
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
 
 }

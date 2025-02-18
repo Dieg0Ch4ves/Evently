@@ -21,12 +21,6 @@ const Header = () => {
 
         {/* Navegação */}
         <Stack direction="row" spacing={2}>
-          <Button onClick={() => navigate("/login")} color="inherit">
-            Entrar
-          </Button>
-          <Button onClick={() => navigate("/register")} color="inherit">
-            Cadastre-se
-          </Button>
           <Button onClick={() => navigate("/about")} color="inherit">
             Sobre
           </Button>
@@ -40,7 +34,16 @@ const Header = () => {
                 Sair
               </Button>
             </>
-          ) : null}
+          ) : (
+            <>
+              <Button onClick={() => navigate("/login")} color="inherit">
+                Entrar
+              </Button>
+              <Button onClick={() => navigate("/register")} color="inherit">
+                Cadastre-se
+              </Button>
+            </>
+          )}
         </Stack>
       </Toolbar>
     </AppBar>

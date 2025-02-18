@@ -22,9 +22,10 @@ const NewEventHandlers = (event, setEvent, setPreview, setError) => {
         // Limite de 5MB
         const reader = new FileReader();
         reader.onloadend = () => {
+          const base64String = reader.result.split(",")[1]; // Remove o cabeçalho do base64
           setEvent((prevEvent) => ({
             ...prevEvent,
-            image: reader.result,
+            image: base64String,
           }));
         };
         reader.readAsDataURL(file);

@@ -8,11 +8,12 @@ import NewEvent from "../components/NewEvent/NewEvent";
 
 const Dashboard = () => {
   const [eventRegistrations, setEventRegistrations] = useState([]);
+  const [eventsCreated, setEventsCreated] = useState([]);
   const [openNewEvent, setOpenNewEvent] = useState(false);
 
   const { user } = useAuth();
 
-  const { handleGetEventById } = EventService();
+  const { handleGetEventById, handleGetEventByIdUser } = EventService();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +27,9 @@ const Dashboard = () => {
           })
         );
 
+        const eventsCreatedResponse = await handleGetEventByIdUser(user.id);
+
+        setEventsCreated(eventsCreatedResponse);
         setEventRegistrations(registrations);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
@@ -69,8 +73,20 @@ const Dashboard = () => {
           )}
         </Stack>
 
-        <Stack width={"100%"}>
+        <Stack spacing={2} width={"100%"}>
           <Typography variant="h5">Eventos Criados</Typography>
+
+          {eventsCreated?.length != 0 ? (
+            <Masonry columns={2} spacing={2}>
+              {eventsCreated.map((event, index) => {
+                return <BoxEvent key={index} event={event} />;
+              })}
+            </Masonry>
+          ) : (
+            <Typography variant="caption">
+              Você não possui nenhum evento ainda!
+            </Typography>
+          )}
         </Stack>
       </Stack>
     </Stack>

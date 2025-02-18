@@ -25,6 +25,18 @@ const EventService = () => {
     }
   };
 
+  // ====================== GET DE EVENTO POR ID DE USUARIO ====================== |
+
+  const handleGetEventByIdUser = async (id) => {
+    try {
+      const response = await apiClient.get(`/event/get-by-user/${id}`);
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data || "Erro ao localizar eventos");
+    }
+  };
+
   // ====================== POST DE EVENTO ====================== |
 
   const handlePostEvent = async (userId, event) => {
@@ -37,7 +49,12 @@ const EventService = () => {
     }
   };
 
-  return { handleGetAllEvents, handleGetEventById, handlePostEvent };
+  return {
+    handleGetAllEvents,
+    handleGetEventById,
+    handlePostEvent,
+    handleGetEventByIdUser,
+  };
 };
 
 export default EventService;

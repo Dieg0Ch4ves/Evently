@@ -30,17 +30,31 @@ const NewEvent = ({ open, onClose }) => {
 
       <DialogContent>
         <Stack direction={"row"} spacing={2}>
-          <FormControl fullWidth>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Título do Evento"
-              type="text"
-              name="title"
-              value={event.title}
-              onChange={handleInputChange}
-            />
-          </FormControl>
+          <Stack width={"100%"}>
+            <FormControl fullWidth>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Título do Evento"
+                type="text"
+                name="title"
+                value={event.title}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+
+            <FormControl fullWidth>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Capacidade do Evento"
+                type="number"
+                name="capacity"
+                value={event.capacity}
+                onChange={handleInputChange}
+              />
+            </FormControl>
+          </Stack>
 
           <FormControl fullWidth>
             <TextField
