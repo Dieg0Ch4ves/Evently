@@ -40,22 +40,22 @@ public class EventController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getById(@PathVariable Long id) throws Exception {
+  public ResponseEntity<EventResponseDTO> getById(@PathVariable Long id) throws Exception {
     try {
       EventResponseDTO response = service.getEventById(id);
       return ResponseEntity.ok(response);
     } catch (Exception e) {
-      return ResponseEntity.badRequest().body(e);
+      throw new Exception("Não foi possível buscar o evento!");
     }
   }
 
   @GetMapping("/get-by-user/{id}")
-  public ResponseEntity<?> getByIdUser(@PathVariable UUID id) throws Exception {
+  public ResponseEntity<List<EventResponseDTO>> getByIdUser(@PathVariable UUID id) throws Exception {
     try {
       List<EventResponseDTO> response = service.getEventByIdUser(id);
       return ResponseEntity.ok(response);
     } catch (Exception e) {
-      return ResponseEntity.badRequest().body(e);
+      throw new Exception("Não foi possível buscar os eventos: " + e);
     }
   }
 

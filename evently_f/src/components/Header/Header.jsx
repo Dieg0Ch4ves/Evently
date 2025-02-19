@@ -8,13 +8,22 @@ const Header = () => {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" color="primary" sx={{ paddingX: 2 }}>
+    <AppBar
+      position="fixed"
+      color="primary" // Set color to primary
+      sx={{
+        paddingX: 2,
+        backdropFilter: "blur(10px)", // Blur effect
+        backgroundColor: "rgba(63, 81, 181, 0.2)", // Translucent background color
+        color: "black",
+      }}
+    >
       <Toolbar disableGutters>
         <Typography
           variant="h5"
           component="div"
           onClick={() => navigate("/")}
-          sx={{ flexGrow: 1, fontWeight: "bold" }}
+          sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }}
         >
           Evently
         </Typography>

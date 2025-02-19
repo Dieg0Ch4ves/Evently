@@ -1,11 +1,14 @@
 import PropTypes from "prop-types";
 import Header from "../Header/Header";
+import { Stack } from "@mui/material";
 
 const Layout = ({ children }) => {
   return (
     <>
       <Header />
-      {children}
+      <Stack marginTop={4} padding={2}>
+        {children}
+      </Stack>
     </>
   );
 };

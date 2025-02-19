@@ -22,14 +22,14 @@ const BoxEvent = ({ event }) => {
         style={{ width: "100%", height: "200px", borderRadius: "4px" }}
         src={
           event.image
-            ? event.image
+            ? `data:image/png;base64,${event.image}`
             : "https://prescotthobbies.com/wp-content/uploads/2019/12/image-not-available-684f2d57b8fb401a6846574ad4d7173be03aab64aac30c989eba8688ad9bfa05.png"
         }
         alt=""
       />
 
       <Stack>
-        <Typography variant="subtitle1">
+        <Typography variant="body1" style={{ wordWrap: "break-word" }}>
           {truncateDescription(event.description, 100)}
         </Typography>
       </Stack>

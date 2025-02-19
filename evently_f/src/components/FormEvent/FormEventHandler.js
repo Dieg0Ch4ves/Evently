@@ -1,7 +1,7 @@
 import EventService from "../../api/EventService";
 import { useAuth } from "../../contexts/AuthContext";
 
-const NewEventHandlers = (event, setEvent, setPreview, setError) => {
+const FormEventHandlers = (event, setEvent, setPreview, setError) => {
   const { handlePostEvent } = EventService();
   const { user } = useAuth();
 
@@ -60,4 +60,4 @@ const NewEventHandlers = (event, setEvent, setPreview, setError) => {
   };
 };
 
-export default NewEventHandlers;
+export default FormEventHandlers;

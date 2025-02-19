@@ -43,9 +43,6 @@ public class EventService {
     public List<EventResponseDTO> getEventByIdUser(UUID id) {
         User user = userRepository.findById(id).orElse(null);
         List<Event> events = eventRepository.findByCreatedBy(user);
-        if (events.isEmpty()) {
-            throw new IllegalArgumentException("Evento não encontrado com este ID: " + id);
-        }
         return events.stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());

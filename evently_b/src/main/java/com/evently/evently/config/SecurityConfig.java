@@ -21,48 +21,55 @@ import org.springframework.web.cors.CorsConfiguration;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  @Autowired
-  SecurityFilter securityFilter;
+    @Autowired
+    SecurityFilter securityFilter;
 
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-    return httpSecurity
-        .csrf(csrf -> csrf.disable())
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-            .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-            .requestMatchers(HttpMethod.GET, "/event/all").permitAll()
-            .requestMatchers(HttpMethod.GET, "/ping").permitAll()
-            .requestMatchers(
-                "/v3/api-docs/**", // Documentação OpenAPI (JSON)
-                "/swagger-ui/**", // Recursos do Swagger UI
-                "/swagger-ui.html" // Página principal do Swagger UI
-            ).permitAll()
-            // .requestMatchers(HttpMethod.GET, "/**").permitAll()
-            .anyRequest().authenticated())
-        .cors(cors -> cors
-            .configurationSource(request -> {
-              CorsConfiguration config = new CorsConfiguration();
-              config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-              config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-              config.addAllowedHeader("*");
-              config.addAllowedMethod("*");
-              return config;
-            }))
-        .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-        .build();
-  }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-      throws Exception {
-    return authenticationConfiguration.getAuthenticationManager();
-  }
+                        // ====================== ENDPOINTS PÚBLICOS ====================== |
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ping").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/event/all").permitAll()
+                        .requestMatchers(
+                                "/v3/api-docs/**", // Documentação OpenAPI (JSON)
+                                "/swagger-ui/**", // Recursos do Swagger UI
+                                "/swagger-ui.html" // Página principal do Swagger UI
+                        ).permitAll()
+
+                        // ====================== ENDPOINTS PRIVADOS ====================== |
+
+                        .requestMatchers(HttpMethod.GET, "/event/get-by-user/**").hasAnyRole("USER", "ADMIN")
+
+                        .anyRequest().authenticated())
+                .cors(cors -> cors
+                        .configurationSource(request -> {
+                            CorsConfiguration config = new CorsConfiguration();
+                            config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+                            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                            config.addAllowedHeader("*");
+                            config.addAllowedMethod("*");
+                            return config;
+                        }))
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 }
