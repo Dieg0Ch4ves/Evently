@@ -40,7 +40,7 @@ const Home = () => {
           {events.length !== 0 ? (
             <Masonry columns={3} spacing={4}>
               {events.map((event, index) => {
-                return <BoxEvent key={index} event={event} />;
+                return <BoxEvent key={index} event={event} userId={user.id} />;
               })}
             </Masonry>
           ) : (

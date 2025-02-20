@@ -49,11 +49,24 @@ const EventService = () => {
     }
   };
 
+  // ====================== POST DE EVENTO ====================== |
+
+  const handlePutEvent = async (userId, event) => {
+    try {
+      const response = await apiClient.put(`/event/${userId}`, event);
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data || "Erro ao localizar evento");
+    }
+  };
+
   return {
     handleGetAllEvents,
+    handleGetEventByIdUser,
     handleGetEventById,
     handlePostEvent,
-    handleGetEventByIdUser,
+    handlePutEvent,
   };
 };
 

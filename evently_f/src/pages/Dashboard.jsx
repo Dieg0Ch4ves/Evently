@@ -23,14 +23,13 @@ const Dashboard = () => {
       try {
         const registrations = await Promise.all(
           user.registrations.map(async (registration) => {
-            console.log(registration);
             const event = await handleGetEventById(registration.eventId);
             return event;
           })
         );
 
         const eventsCreatedResponse = await handleGetEventByIdUser(user.id);
-
+        console.log(eventsCreatedResponse);
         setEventsCreated(eventsCreatedResponse);
         setEventRegistrations(registrations);
       } catch (error) {
@@ -68,7 +67,7 @@ const Dashboard = () => {
           {eventRegistrations?.length != 0 ? (
             <Masonry columns={2} spacing={2}>
               {eventRegistrations.map((event, index) => {
-                return <BoxEvent key={index} event={event} />;
+                return <BoxEvent key={index} event={event} userId={user.id} />;
               })}
             </Masonry>
           ) : (
@@ -88,7 +87,7 @@ const Dashboard = () => {
           {eventsCreated?.length != 0 ? (
             <Masonry columns={2} spacing={2}>
               {eventsCreated.map((event, index) => {
-                return <BoxEvent key={index} event={event} />;
+                return <BoxEvent key={index} event={event} userId={user.id} />;
               })}
             </Masonry>
           ) : (

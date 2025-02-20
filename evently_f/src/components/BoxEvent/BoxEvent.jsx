@@ -1,12 +1,18 @@
-import { Button, Paper, Stack, Typography } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { Button, IconButton, Paper, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import FormatDate from "../../utils/FormatDate";
+import EditEvent from "../EditEvent/EditEvent";
+import { useState } from "react";
 
-const BoxEvent = ({ event }) => {
+const BoxEvent = ({ event, userId }) => {
+  const [openEdit, setOpenEdit] = useState(false);
+
   const navigate = useNavigate("");
 
   const { formatDateTime } = FormatDate();
+  const isUserEvent = event.createdBy === userId;
 
   const truncateDescription = (description, limit) => {
     if (description.length > limit) {
@@ -47,19 +53,57 @@ const BoxEvent = ({ event }) => {
         </Typography>
       </Stack>
 
-      <Button
-        variant="contained"
-        size="large"
-        onClick={() => navigate(`/event/${event.id}`)}
-      >
-        Acessar
-      </Button>
+      {isUserEvent ? (
+        <Stack spacing={2} direction={"row"} justifyContent={"space-between"}>
+          <Stack direction={"row"} spacing={2}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => navigate(`/event/${event.id}`)}
+            >
+              Acessar
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              onClick={() => setOpenEdit(true)}
+            >
+              Editar
+            </Button>
+          </Stack>
+
+          <IconButton
+            variant="outlined"
+            color="error"
+            size="small"
+            onClick={() => navigate(`/event/${event.id}`)}
+          >
+            <Delete />
+          </IconButton>
+        </Stack>
+      ) : (
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => navigate(`/event/${event.id}`)}
+        >
+          Acessar
+        </Button>
+      )}
+
+      <EditEvent
+        open={openEdit}
+        onClose={() => setOpenEdit(false)}
+        eventId={event.id}
+      />
     </Stack>
   );
 };
 
 BoxEvent.propTypes = {
   event: PropTypes.object.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
 export default BoxEvent;

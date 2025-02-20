@@ -3,8 +3,8 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import FormEventHandlers from "./FormEventHandler";
 
-const FormEvent = ({ event, setEvent }) => {
-  const [preview, setPreview] = useState(null);
+const FormEvent = ({ event, setEvent, previewOpt }) => {
+  const [preview, setPreview] = useState(previewOpt || null);
   const [error, setError] = useState("");
 
   const { handleInputChange, handleFileChange, handleRemoveImage } =
@@ -122,6 +122,7 @@ const FormEvent = ({ event, setEvent }) => {
 FormEvent.propTypes = {
   event: PropTypes.object.isRequired,
   setEvent: PropTypes.func.isRequired,
+  previewOpt: PropTypes.string,
 };
 
 export default FormEvent;
