@@ -11,7 +11,7 @@ import EventService from "../../api/EventService";
 import { useAuth } from "../../contexts/AuthContext";
 import FormEvent from "../FormEvent/FormEvent";
 
-const NewEvent = ({ open, onClose }) => {
+const NewEvent = ({ open, onClose, setSnackbarData, addEventToList }) => {
   const [event, setEvent] = useState({});
   const { user } = useAuth();
   const { handlePostEvent } = EventService();
@@ -20,8 +20,21 @@ const NewEvent = ({ open, onClose }) => {
     try {
       const response = await handlePostEvent(user.id, event);
       console.log(response);
+      setSnackbarData({
+        open: true,
+        message: "Evento criado com sucesso!",
+        severity: "success",
+      });
+      addEventToList(response); // Adiciona o novo evento à lista de eventos
+      setEvent({}); // Reinicia o estado do evento
+      onClose();
     } catch (error) {
       console.error("ERRO: ", error);
+      setSnackbarData({
+        open: true,
+        message: "Erro ao criar evento!",
+        severity: "error",
+      });
     }
   };
 
@@ -48,6 +61,8 @@ const NewEvent = ({ open, onClose }) => {
 NewEvent.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  setSnackbarData: PropTypes.func.isRequired,
+  addEventToList: PropTypes.func.isRequired,
 };
 
 export default NewEvent;

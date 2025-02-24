@@ -41,6 +41,10 @@ const FormEventHandlers = (event, setEvent, setPreview, setError) => {
 
   const handleRemoveImage = () => {
     setPreview(null);
+    setEvent((prevEvent) => ({
+      ...prevEvent,
+      image: null,
+    }));
   };
 
   const handleSubmit = async () => {

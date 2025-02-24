@@ -17,6 +17,7 @@ const EditEvent = ({ open, onClose, eventId }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!eventId) return;
       try {
         const response = await handleGetEventById(eventId);
 

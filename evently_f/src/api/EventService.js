@@ -49,11 +49,23 @@ const EventService = () => {
     }
   };
 
-  // ====================== POST DE EVENTO ====================== |
+  // ====================== PUT DE EVENTO ====================== |
 
   const handlePutEvent = async (userId, event) => {
     try {
       const response = await apiClient.put(`/event/${userId}`, event);
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data || "Erro ao localizar evento");
+    }
+  };
+
+  // ====================== DELETE DE EVENTO ====================== |
+
+  const handleDeleteEvent = async (id) => {
+    try {
+      const response = await apiClient.delete(`/event/${id}`);
 
       return response.data;
     } catch (error) {
@@ -67,6 +79,7 @@ const EventService = () => {
     handleGetEventById,
     handlePostEvent,
     handlePutEvent,
+    handleDeleteEvent,
   };
 };
 

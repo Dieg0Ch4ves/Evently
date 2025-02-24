@@ -1,6 +1,13 @@
 import { Add } from "@mui/icons-material";
 import { Masonry } from "@mui/lab";
-import { Button, Divider, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Divider,
+  Snackbar,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import EventService from "../api/EventService";
 import BoxEvent from "../components/BoxEvent/BoxEvent";
@@ -11,6 +18,11 @@ const Dashboard = () => {
   const [eventRegistrations, setEventRegistrations] = useState([]);
   const [eventsCreated, setEventsCreated] = useState([]);
   const [openNewEvent, setOpenNewEvent] = useState(false);
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
   const { user } = useAuth();
 
@@ -48,6 +60,14 @@ const Dashboard = () => {
     setOpenNewEvent(false);
   };
 
+  const handleCloseSnackbar = () => {
+    setSnackbarData((prev) => ({ ...prev, open: false }));
+  };
+
+  const addEventToList = (event) => {
+    setEventsCreated((prev) => [...prev, event]);
+  };
+
   return (
     <Stack spacing={2} margin={5}>
       <Stack>
@@ -55,7 +75,12 @@ const Dashboard = () => {
           <Add />
           <Typography>Criar Evento</Typography>
         </Button>
-        <NewEvent open={openNewEvent} onClose={close} />
+        <NewEvent
+          open={openNewEvent}
+          onClose={close}
+          setSnackbarData={setSnackbarData}
+          addEventToList={addEventToList}
+        />
       </Stack>
 
       <Stack direction={"row"} spacing={2} justifyContent={"space-between"}>
@@ -87,7 +112,14 @@ const Dashboard = () => {
           {eventsCreated?.length != 0 ? (
             <Masonry columns={2} spacing={2}>
               {eventsCreated.map((event, index) => {
-                return <BoxEvent key={index} event={event} userId={user.id} />;
+                return (
+                  <BoxEvent
+                    key={index}
+                    event={event}
+                    userId={user.id}
+                    setSnackbarData={setSnackbarData}
+                  />
+                );
               })}
             </Masonry>
           ) : (
@@ -97,6 +129,16 @@ const Dashboard = () => {
           )}
         </Stack>
       </Stack>
+
+      <Snackbar
+        open={snackbarData.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarData.severity}>
+          {snackbarData.message}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };
