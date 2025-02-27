@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { ArrowBack, Person } from "@mui/icons-material";
+import LoginIcon from "@mui/icons-material/Login"; // Ícone para botão
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
+  Alert,
   Button,
+  Divider,
   FormControl,
+  FormHelperText,
   IconButton,
   InputAdornment,
   OutlinedInput,
   Paper,
+  Snackbar,
   Stack,
   TextField,
   Typography,
-  FormHelperText,
-  Snackbar,
-  Alert,
 } from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useAuth } from "../contexts/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowBack } from "@mui/icons-material";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -30,7 +32,6 @@ const Login = () => {
   });
 
   const { login } = useAuth();
-
   const navigate = useNavigate("");
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
@@ -87,11 +88,15 @@ const Login = () => {
     <Stack
       component={Paper}
       elevation={5}
-      padding={4}
+      padding={5}
       spacing={3}
-      marginTop={10}
-      justifySelf={"center"}
+      margin="auto"
+      maxWidth={400}
+      mt={8}
+      borderRadius={3}
+      alignItems="center"
     >
+      {/* Botão Voltar */}
       <IconButton
         onClick={() => navigate("/")}
         size="large"
@@ -100,11 +105,19 @@ const Login = () => {
         <ArrowBack sx={{ fontSize: "2rem" }} />
       </IconButton>
 
-      <Typography variant="h5" align="center">
-        Entre no Evently
+      {/* Imagem Ilustrativa */}
+      <Stack>
+        <Person sx={{ width: "80px", height: "80px" }} />
+      </Stack>
+
+      <Typography variant="h5" fontWeight="bold">
+        Bem-vindo ao Evently!
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        Faça login para continuar
       </Typography>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <Stack spacing={2}>
           <FormControl fullWidth error={!!errors.email}>
             <TextField
@@ -117,6 +130,7 @@ const Login = () => {
             />
             {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
           </FormControl>
+
           <FormControl fullWidth error={!!errors.password}>
             <OutlinedInput
               type={showPassword ? "text" : "password"}
@@ -148,23 +162,43 @@ const Login = () => {
             variant="contained"
             color="primary"
             fullWidth
-            sx={{ mt: 2 }}
+            startIcon={<LoginIcon />}
+            sx={{ mt: 2, py: 1.5, fontSize: "1rem" }}
           >
             Entrar
           </Button>
         </Stack>
       </form>
 
-      <Stack alignItems={"center"} spacing={2}>
-        <a href="">Esqueci minha senha!</a>
-        <Typography>
-          Não possui cadastro? Clique <a href="/register">aqui!</a>{" "}
+      {/* Links para recuperação e registro */}
+      <Stack alignItems="center" spacing={1} mt={2} width="100%">
+        <Typography variant="body2">
+          <a href="#" style={{ textDecoration: "none", color: "#1976d2" }}>
+            Esqueci minha senha!
+          </a>
+        </Typography>
+
+        <Divider flexItem sx={{ width: "100%" }} />
+
+        <Typography variant="body2">
+          Não possui uma conta?{" "}
+          <a
+            href="/register"
+            style={{
+              textDecoration: "none",
+              color: "#1976d2",
+              fontWeight: "bold",
+            }}
+          >
+            Cadastre-se
+          </a>
         </Typography>
       </Stack>
 
+      {/* Snackbar de Feedback */}
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
+        autoHideDuration={4000}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         onClose={handleCloseSnackbar}
       >

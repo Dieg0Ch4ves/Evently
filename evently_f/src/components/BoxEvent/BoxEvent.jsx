@@ -1,40 +1,33 @@
 import { Delete } from "@mui/icons-material";
-import { Button, IconButton, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EventService from "../../api/EventService";
 import FormatDate from "../../utils/FormatDate";
 import { truncateDescription } from "../../utils/truncateDescription";
 import ConfirmDialog from "../ConfirmDialog/ConfirmDialog";
-import EditEvent from "../EditEvent/EditEvent";
 
 const BoxEvent = ({ event, userId, setSnackbarData }) => {
-  // ====================== STATE E VARIÁVEIS ====================== |
-
-  const [openEdit, setOpenEdit] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  const navigate = useNavigate("");
-
+  const navigate = useNavigate();
   const isUserEvent = event.createdBy === userId;
-
-  useEffect(() => {
-    console.log(openConfirm);
-  }, [openConfirm]);
-
-  // ====================== ABSTRAÇÃO DOS MÉTODOS ====================== |
 
   const { formatDateTime } = FormatDate();
   const { handleDeleteEvent } = EventService();
 
-  // ====================== MÉTODOS ====================== |
-
   const handleDelete = async (id) => {
     try {
       await handleDeleteEvent(id);
-      setOpenConfirm(false);
       setIsDeleted(true);
       setSnackbarData({
         open: true,
@@ -42,7 +35,7 @@ const BoxEvent = ({ event, userId, setSnackbarData }) => {
         severity: "success",
       });
     } catch (error) {
-      console.error(error);
+      console.error("ERRO:", error);
       setSnackbarData({
         open: true,
         message: "Erro ao excluir evento!",
@@ -51,98 +44,122 @@ const BoxEvent = ({ event, userId, setSnackbarData }) => {
     }
   };
 
-  if (isDeleted) {
-    return null;
-  }
+  if (isDeleted) return null;
 
   return (
-    <Stack component={Paper} elevation={3} width={500} spacing={2} padding={2}>
-      <Typography variant="h4" style={{ wordWrap: "break-word" }}>
+    <Paper
+      elevation={5}
+      sx={{
+        maxWidth: 500,
+        padding: 3,
+        borderRadius: 3,
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          transform: "scale(1.02)",
+        },
+      }}
+    >
+      {/* Título */}
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        sx={{ wordWrap: "break-word", color: "#333" }}
+      >
         {event.title}
       </Typography>
-      <img
-        style={{ width: "100%", height: "200px", borderRadius: "4px" }}
+
+      {/* Imagem do evento */}
+      <Box
+        component="img"
         src={
           event.image
             ? `data:image/png;base64,${event.image}`
             : "https://prescotthobbies.com/wp-content/uploads/2019/12/image-not-available-684f2d57b8fb401a6846574ad4d7173be03aab64aac30c989eba8688ad9bfa05.png"
         }
         alt="Evento"
+        sx={{
+          width: "100%",
+          height: 200,
+          borderRadius: 2,
+          objectFit: "cover",
+          marginTop: 1,
+          transition: "0.3s",
+          "&:hover": {
+            opacity: 0.9,
+          },
+        }}
       />
 
-      <Stack>
-        <Typography variant="body1" style={{ wordWrap: "break-word" }}>
-          {truncateDescription(event.description, 100)}
+      {/* Descrição */}
+      <Typography
+        variant="body1"
+        sx={{ mt: 2, color: "#555", wordWrap: "break-word" }}
+      >
+        {truncateDescription(event.description, 100)}
+      </Typography>
+
+      {/* Informações do evento */}
+      <Stack direction="row" justifyContent="space-between" sx={{ mt: 2 }}>
+        <Typography variant="body2" color="text.secondary">
+          📅 <b>{event.dateEvent ? formatDateTime(event.dateEvent) : "N/A"}</b>
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          👥 <b>{event.capacity} pessoas</b>
         </Typography>
       </Stack>
 
-      <Stack direction={"row"} justifyContent={"space-between"}>
-        <Typography>
-          Data do Evento:{" "}
-          <span style={{ fontWeight: "bold" }}>
-            {event.dateEvent ? formatDateTime(event.dateEvent) : "N/A"}
-          </span>
-        </Typography>
-        <Typography>
-          Capacidade:{" "}
-          <span style={{ fontWeight: "bold" }}>{event.capacity}</span>
-        </Typography>
-      </Stack>
+      {/* Botões de ação */}
+      <Stack
+        direction="row"
+        spacing={2}
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mt: 3 }}
+      >
+        {/* Ações do criador do evento */}
+        {isUserEvent ? (
+          <>
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="contained"
+                sx={{ textTransform: "none" }}
+                onClick={() => navigate(`/event/${event.id}`)}
+              >
+                Ver Evento
+              </Button>
+            </Stack>
 
-      {isUserEvent ? (
-        <Stack spacing={2} direction={"row"} justifyContent={"space-between"}>
-          <Stack direction={"row"} spacing={2}>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => navigate(`/event/${event.id}`)}
+            <IconButton
+              variant="outlined"
+              color="error"
+              aria-label="Excluir evento"
+              onClick={() => setOpenConfirm(true)}
             >
-              Acessar
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              size="small"
-              onClick={() => setOpenEdit(true)}
-            >
-              Editar
-            </Button>
-          </Stack>
+              <Delete />
+            </IconButton>
 
-          <IconButton
-            variant="outlined"
-            color="error"
-            size="small"
-            onClick={() => setOpenConfirm(true)}
+            {/* Diálogo de confirmação para exclusão */}
+            <ConfirmDialog
+              open={openConfirm}
+              onClose={() => setOpenConfirm(false)}
+              title="Confirmar Exclusão"
+              content={`Tem certeza que deseja excluir o evento '${event.title}'? Esta ação não pode ser desfeita.`}
+              onConfirm={() => handleDelete(event.id)}
+            />
+          </>
+        ) : (
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ textTransform: "none", width: "100%" }}
+            onClick={() => navigate(`/event/${event.id}`)}
           >
-            <Delete />
-          </IconButton>
-
-          <ConfirmDialog
-            open={openConfirm}
-            onClose={() => setOpenConfirm(false)}
-            title={"Confirmar Exclusão"}
-            content={`Tem certeza que deseja excluir este evento de titulo '${event.title}'? Esta ação não pode ser desfeita.`}
-            onConfirm={handleDelete}
-            eventId={event.id}
-          />
-
-          <EditEvent
-            open={openEdit}
-            onClose={() => setOpenEdit(false)}
-            eventId={event.id}
-          />
-        </Stack>
-      ) : (
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => navigate(`/event/${event.id}`)}
-        >
-          Acessar
-        </Button>
-      )}
-    </Stack>
+            Ver Evento
+          </Button>
+        )}
+      </Stack>
+    </Paper>
   );
 };
 
