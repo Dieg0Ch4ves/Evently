@@ -1,6 +1,14 @@
-import { AppBar, Button, Stack, Toolbar, Typography } from "@mui/material";
+import {
+  AppBar,
+  Button,
+  IconButton,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { Home } from "@mui/icons-material";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -19,40 +27,45 @@ const Header = () => {
       }}
     >
       <Toolbar disableGutters>
-        <Typography
-          variant="h5"
-          component="div"
-          onClick={() => navigate("/")}
-          sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }}
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          width={"100%"}
         >
-          Evently
-        </Typography>
+          <Stack direction={"row"} spacing={2} alignItems={"center"}>
+            <Typography variant="h5">Evently</Typography>
+            <IconButton variant="text" onClick={() => navigate("/")}>
+              <Home />
+            </IconButton>
+          </Stack>
 
-        {/* Navegação */}
-        <Stack direction="row" spacing={2}>
-          <Button onClick={() => navigate("/about")} color="inherit">
-            Sobre
-          </Button>
+          {/* Navegação */}
+          <Stack direction="row" spacing={2}>
+            <Button onClick={() => navigate("/about")} color="inherit">
+              Sobre
+            </Button>
 
-          {user ? (
-            <>
-              <Button color="inherit" onClick={() => navigate("/dashboard")}>
-                Dashboard
-              </Button>
-              <Button color="inherit" onClick={logout}>
-                Sair
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button onClick={() => navigate("/login")} color="inherit">
-                Entrar
-              </Button>
-              <Button onClick={() => navigate("/register")} color="inherit">
-                Cadastre-se
-              </Button>
-            </>
-          )}
+            {user ? (
+              <>
+                <Button color="inherit" onClick={() => navigate("/dashboard")}>
+                  Dashboard
+                </Button>
+                <Button color="inherit" onClick={logout}>
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={() => navigate("/login")} color="inherit">
+                  Entrar
+                </Button>
+                <Button onClick={() => navigate("/register")} color="inherit">
+                  Cadastre-se
+                </Button>
+              </>
+            )}
+          </Stack>
         </Stack>
       </Toolbar>
     </AppBar>

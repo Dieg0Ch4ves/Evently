@@ -4,9 +4,13 @@ import {
   Alert,
   Button,
   Divider,
+  Grid,
+  Paper,
   Snackbar,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import EventService from "../api/EventService";
@@ -23,6 +27,9 @@ const Dashboard = () => {
     message: "",
     severity: "info",
   });
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const { user } = useAuth();
 
@@ -83,52 +90,56 @@ const Dashboard = () => {
         />
       </Stack>
 
-      <Stack direction={"row"} spacing={2} justifyContent={"space-between"}>
-        <Stack width={"50%"} spacing={2}>
-          <Typography variant="h5">Eventos Inscritos</Typography>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
+          <Stack spacing={2}>
+            <Stack component={Paper} padding={2} elevation={6}>
+              <Typography variant="h5" fontWeight={"bold"}>
+                Eventos Inscritos
+              </Typography>
+            </Stack>
+            <Divider />
+            {eventRegistrations?.length !== 0 ? (
+              <Masonry columns={isMobile ? 1 : 2} spacing={2}>
+                {eventRegistrations.map((event, index) => (
+                  <BoxEvent key={index} event={event} userId={user.id} />
+                ))}
+              </Masonry>
+            ) : (
+              <Typography variant="caption">
+                Você não se inscreveu em nenhum evento ainda!
+              </Typography>
+            )}
+          </Stack>
+        </Grid>
 
-          <Divider />
-
-          {eventRegistrations?.length != 0 ? (
-            <Masonry columns={2} spacing={2}>
-              {eventRegistrations.map((event, index) => {
-                return <BoxEvent key={index} event={event} userId={user.id} />;
-              })}
-            </Masonry>
-          ) : (
-            <Typography variant="caption">
-              Você não se inscreveu em nenhum evento ainda!
-            </Typography>
-          )}
-        </Stack>
-
-        <Divider orientation={"vertical"} flexItem />
-
-        <Stack spacing={2} width={"50%"}>
-          <Typography variant="h5">Eventos Criados</Typography>
-
-          <Divider />
-
-          {eventsCreated?.length != 0 ? (
-            <Masonry columns={2} spacing={2}>
-              {eventsCreated.map((event, index) => {
-                return (
+        <Grid item xs={12} md={6}>
+          <Stack spacing={2}>
+            <Stack component={Paper} padding={2} elevation={6}>
+              <Typography variant="h5" fontWeight={"bold"}>
+                Eventos Criados
+              </Typography>
+            </Stack>
+            <Divider />
+            {eventsCreated?.length !== 0 ? (
+              <Masonry columns={isMobile ? 1 : 2} spacing={2}>
+                {eventsCreated.map((event, index) => (
                   <BoxEvent
                     key={index}
                     event={event}
                     userId={user.id}
                     setSnackbarData={setSnackbarData}
                   />
-                );
-              })}
-            </Masonry>
-          ) : (
-            <Typography variant="caption">
-              Você não possui nenhum evento ainda!
-            </Typography>
-          )}
-        </Stack>
-      </Stack>
+                ))}
+              </Masonry>
+            ) : (
+              <Typography variant="caption">
+                Você não possui nenhum evento ainda!
+              </Typography>
+            )}
+          </Stack>
+        </Grid>
+      </Grid>
 
       <Snackbar
         open={snackbarData.open}

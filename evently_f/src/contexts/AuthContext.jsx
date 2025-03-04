@@ -1,6 +1,6 @@
 import axios from "axios";
 import PropTypes from "prop-types";
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import baseUrl from "../utils/baseUrl";
 
 // Criação do contexto
@@ -8,9 +8,9 @@ const AuthContext = createContext();
 
 // Provider para gerenciar estado global
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Armazena informações do usuário
-  const [token, setToken] = useState(null); // Armazena o token JWT ou similar
-  const [loading, setLoading] = useState(true); // Para inicialização
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -21,6 +21,23 @@ export const AuthProvider = ({ children }) => {
       setToken(storedToken);
     }
     setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    // Interceptor para capturar erros de token expirado
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 403) {
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(responseInterceptor);
+    };
   }, []);
 
   const login = async (credentials) => {
@@ -81,6 +98,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userResponse.data);
       localStorage.setItem("user", JSON.stringify(userResponse.data));
     } catch (error) {
+      logout(); // Se falhar, significa que o token pode estar inválido
       throw new Error(error.response?.data || "Erro ao fazer login");
     }
   };
@@ -99,5 +117,4 @@ AuthProvider.propTypes = {
 };
 
 // Hook para usar o AuthContext
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

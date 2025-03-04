@@ -11,16 +11,16 @@ const EventRegistrationService = () => {
 
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data || "Erro ao se inscrever no evento");
+      throw new Error(error || "Erro ao se inscrever no evento");
     }
   };
 
   // ============================ FUNCTION UNSUBSCRIBE EVENT ============================ |
 
-  const handleUnsubscribeEvent = async (registrationId) => {
+  const handleUnsubscribeEvent = async (eventId, userId) => {
     try {
-      const response = await apiClient.post(
-        `registration/unregister/${registrationId}`
+      const response = await apiClient.delete(
+        `registration/unregister/${eventId}/${userId}`
       );
 
       return response.data;
