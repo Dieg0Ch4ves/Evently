@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import EventService from "../api/EventService";
 import EventRegistrationService from "../api/EventRegistrationService";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "./useAuth";
 
 const useEvent = () => {
-  // =================== VÁRIAVEIS E STATES ===================
-
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
@@ -19,40 +17,37 @@ const useEvent = () => {
     severity: "info",
   });
 
-  // =================== ABSTRAINDO MÉTODOS ===================
+  // ✅ Memoizando os serviços para evitar re-renderizações desnecessárias
+  const eventService = useMemo(() => EventService(), []);
+  const eventRegistrationService = useMemo(
+    () => EventRegistrationService(),
+    []
+  );
 
-  const { handleGetEventById, handleDeleteEvent, handlePutEvent } =
-    EventService();
-
-  const { handleSubscribeEvent, handleUnsubscribeEvent } =
-    EventRegistrationService();
-
-  // =================== BUSCA OS DADOS DO EVENTO PELO ID ===================
+  // ✅ Memoizando as funções para evitar re-criação em cada render
+  const fetchEvent = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await eventService.handleGetEventById(id);
+      setEvent(response);
+    } catch (error) {
+      console.error("Erro ao carregar evento:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, eventService]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const response = await handleGetEventById(id);
-        setEvent(response);
-      } catch (error) {
-        console.error("Erro ao carregar evento:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, [id]);
+    fetchEvent();
+  }, [fetchEvent]);
 
-  // =================== LIDA COM A INSCRIÇÃO NO EVENTO ===================
-
-  const handleSubscribe = async () => {
+  const handleSubscribe = useCallback(async () => {
     try {
-      await handleSubscribeEvent(event.id, user.id);
+      await eventRegistrationService.handleSubscribeEvent(event.id, user.id);
       await refreshUser();
       setEvent((prev) => ({
         ...prev,
-        registrations: [...prev.registrations, { userId: user.id }],
+        registrations: [...(prev?.registrations || []), { userId: user.id }],
       }));
       setSnackbarData({
         open: true,
@@ -67,25 +62,22 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  };
+  }, [event, user.id, eventRegistrationService, refreshUser]);
 
-  // =================== LIDA COM O CANCELAMENTO DA INSCRIÇÃO NO EVENTO ===================
-
-  const handleUnsubscribe = async () => {
+  const handleUnsubscribe = useCallback(async () => {
     try {
-      const userRegistration = event.registrations.find(
+      const userRegistration = event?.registrations?.find(
         (r) => r.userId === user.id
       );
       if (!userRegistration) return;
 
-      await handleUnsubscribeEvent(event.id, user.id);
+      await eventRegistrationService.handleUnsubscribeEvent(event.id, user.id);
       await refreshUser();
 
       setEvent((prev) => ({
         ...prev,
-        registrations: prev.registrations.filter(
-          (r) => r.id !== userRegistration.id
-        ),
+        registrations:
+          prev?.registrations?.filter((r) => r.userId !== user.id) || [],
       }));
 
       setSnackbarData({
@@ -101,13 +93,11 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  };
+  }, [event, user.id, eventRegistrationService, refreshUser]);
 
-  // =================== LIDA COM A EDIÇÃO DO EVENTO ===================
-
-  const handleEdit = async () => {
+  const handleEdit = useCallback(async () => {
     try {
-      const updatedEvent = await handlePutEvent(event.id, event);
+      const updatedEvent = await eventService.handlePutEvent(event.id, event);
       setEvent(updatedEvent);
       setSnackbarData({
         open: true,
@@ -124,13 +114,11 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  };
+  }, [event, eventService]);
 
-  // =================== LIDA COM A EXCLUSÃO DO EVENTO ===================
-
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     try {
-      await handleDeleteEvent(event.id);
+      await eventService.handleDeleteEvent(event.id);
       setSnackbarData({
         open: true,
         message: "Evento excluído!",
@@ -145,13 +133,11 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  };
+  }, [event, eventService, navigate]);
 
-  // =================== LIDA COM O FECHAMENTO DO SNACKBAR ===================
-
-  const handleCloseSnackbar = () => {
+  const handleCloseSnackbar = useCallback(() => {
     setSnackbarData((prev) => ({ ...prev, open: false }));
-  };
+  }, []);
 
   return {
     event,

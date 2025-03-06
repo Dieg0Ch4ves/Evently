@@ -8,8 +8,8 @@ import {
 import PropTypes from "prop-types";
 import { useState } from "react";
 import EventService from "../../api/EventService";
-import { useAuth } from "../../contexts/AuthContext";
 import FormEvent from "../FormEvent/FormEvent";
+import { useAuth } from "../../hooks/useAuth";
 
 const NewEvent = ({ open, onClose, setSnackbarData, addEventToList }) => {
   const [event, setEvent] = useState({});

@@ -1,16 +1,16 @@
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import PropTypes from "prop-types";
-import { useAuth } from "../contexts/AuthContext";
-import { Backdrop } from "@mui/material";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, token } = useAuth();
 
-  if (loading) return <Backdrop>Carregando...</Backdrop>;
+  if (!user || !token) {
+    return <Navigate to="/login" replace />;
+  }
 
-  return user ? children : <Navigate to="/login" />;
+  return children;
 };
-
 ProtectedRoute.propTypes = {
   children: PropTypes.node.isRequired,
 };

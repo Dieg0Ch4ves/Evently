@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { ArrowBack, Person, PersonAdd } from "@mui/icons-material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
+  Alert,
   Button,
+  Divider,
   FormControl,
+  FormHelperText,
   IconButton,
   InputAdornment,
   OutlinedInput,
   Paper,
+  Snackbar,
   Stack,
   TextField,
   Typography,
-  FormHelperText,
-  Snackbar,
-  Alert,
 } from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useAuth } from "../contexts/AuthContext";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -35,6 +38,7 @@ const Register = () => {
   });
 
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
   const handleClickShowConfirmPassword = () =>
@@ -47,30 +51,15 @@ const Register = () => {
 
   const validate = () => {
     let tempErrors = {};
-
-    if (!formData.name) {
-      tempErrors.name = "O nome de usuário é obrigatório.";
-    } else if (!/^[a-zA-Z0-9._-]+$/.test(formData.name)) {
-      tempErrors.name =
-        "O nome de usuário não deve conter espaços ou caracteres especiais.";
-    }
-
-    if (!formData.email) {
-      tempErrors.email = "E-mail é obrigatório.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      tempErrors.email = "Insira um e-mail válido.";
-    }
-
-    if (!formData.password) {
-      tempErrors.password = "Senha é obrigatória.";
-    } else if (formData.password.length < 6) {
-      tempErrors.password = "A senha deve ter pelo menos 6 caracteres.";
-    }
-
-    if (formData.confirmPassword !== formData.password) {
+    if (!formData.name) tempErrors.name = "Nome é obrigatório.";
+    if (!formData.email) tempErrors.email = "E-mail é obrigatório.";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      tempErrors.email = "E-mail inválido.";
+    if (!formData.password) tempErrors.password = "Senha obrigatória.";
+    else if (formData.password.length < 6)
+      tempErrors.password = "Mínimo de 6 caracteres.";
+    if (formData.confirmPassword !== formData.password)
       tempErrors.confirmPassword = "As senhas não coincidem.";
-    }
-
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -82,143 +71,147 @@ const Register = () => {
         await register(formData);
         setSnackbar({
           open: true,
-          message: "Registro realizado com sucesso!",
+          message: "Cadastro realizado com sucesso!",
           type: "success",
         });
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          role: 1,
-        });
+        navigate("/login");
       } catch (error) {
         setSnackbar({
           open: true,
-          message: error.message || "Erro ao realizar o registro.",
+          message: error.message || "Erro ao cadastrar.",
           type: "error",
         });
       }
     }
   };
 
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
+  const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   return (
-    <>
-      <Stack
-        component={Paper}
-        elevation={5}
-        padding={4}
-        spacing={3}
-        marginTop={10}
-        justifySelf={"center"}
+    <Stack
+      component={Paper}
+      elevation={5}
+      borderRadius={3}
+      padding={4}
+      spacing={2}
+      maxWidth={600}
+      width={"100%"}
+      alignSelf={"center"}
+      alignItems="center"
+    >
+      <IconButton
+        onClick={() => navigate(-1)}
+        size="large"
+        sx={{ alignSelf: "start" }}
       >
-        <Typography variant="h5" align="center">
-          Cadastre-se no Evently
-        </Typography>
+        <ArrowBack sx={{ fontSize: "2rem" }} />
+      </IconButton>
 
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={2}>
-            <FormControl fullWidth error={!!errors.name}>
-              <TextField
-                label="Nome"
-                placeholder="Digite seu nome ou apelido"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                error={!!errors.name}
-              />
-              {errors.name && <FormHelperText>{errors.name}</FormHelperText>}
-            </FormControl>
-
-            <FormControl fullWidth error={!!errors.email}>
-              <TextField
-                label="E-mail"
-                placeholder="Digite seu e-mail"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                error={!!errors.email}
-              />
-              {errors.email && <FormHelperText>{errors.email}</FormHelperText>}
-            </FormControl>
-
-            <FormControl fullWidth error={!!errors.password}>
-              <OutlinedInput
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Digite sua senha"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={
-                        showPassword ? "Ocultar senha" : "Mostrar senha"
-                      }
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              {errors.password && (
-                <FormHelperText>{errors.password}</FormHelperText>
-              )}
-            </FormControl>
-
-            <FormControl fullWidth error={!!errors.confirmPassword}>
-              <OutlinedInput
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirme sua senha"
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={
-                        showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
-                      }
-                      onClick={handleClickShowConfirmPassword}
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              {errors.confirmPassword && (
-                <FormHelperText>{errors.confirmPassword}</FormHelperText>
-              )}
-            </FormControl>
-
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ mt: 2 }}
-            >
-              Cadastrar
-            </Button>
-          </Stack>
-        </form>
-
-        <Stack alignItems={"center"} spacing={2}>
-          <a href="/login">Já possui cadastro?</a>
-        </Stack>
+      <Stack>
+        <Person sx={{ width: "80px", height: "80px" }} />
       </Stack>
 
-      {/* Snackbar para feedback */}
+      <Typography variant="h5" fontWeight="bold">
+        Crie sua conta
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        Registre-se para acessar o Evently
+      </Typography>
+
+      <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <Stack spacing={2}>
+          <TextField
+            label="Nome"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            error={!!errors.name}
+            helperText={errors.name}
+            fullWidth
+          />
+          <TextField
+            label="E-mail"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
+            fullWidth
+          />
+          <FormControl fullWidth error={!!errors.password}>
+            <OutlinedInput
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Digite sua senha"
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClickShowPassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            {errors.password && (
+              <FormHelperText>{errors.password}</FormHelperText>
+            )}
+          </FormControl>
+          <FormControl fullWidth error={!!errors.confirmPassword}>
+            <OutlinedInput
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirme sua senha"
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowConfirmPassword}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
+            {errors.confirmPassword && (
+              <FormHelperText>{errors.confirmPassword}</FormHelperText>
+            )}
+          </FormControl>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            startIcon={<PersonAdd />}
+            sx={{ mt: 2, py: 1.5, fontSize: "1rem" }}
+          >
+            Cadastrar
+          </Button>
+        </Stack>
+      </form>
+
+      <Stack alignItems="center" spacing={1} mt={2} width="100%">
+        <Divider flexItem sx={{ width: "100%" }} />
+        <Typography variant="body2">
+          Já possui uma conta?{" "}
+          <a
+            href="/login"
+            style={{
+              textDecoration: "none",
+              color: "#1976d2",
+              fontWeight: "bold",
+            }}
+          >
+            Faça login
+          </a>
+        </Typography>
+      </Stack>
+
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={6000}
+        autoHideDuration={4000}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         onClose={handleCloseSnackbar}
       >
@@ -230,7 +223,7 @@ const Register = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+    </Stack>
   );
 };
 

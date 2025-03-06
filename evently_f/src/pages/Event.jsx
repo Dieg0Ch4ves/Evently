@@ -41,6 +41,8 @@ const Event = () => {
     handleCloseSnackbar,
   } = useEvent();
 
+  console.log(event);
+
   if (isLoading) {
     return (
       <Backdrop open={isLoading} style={{ zIndex: 1 }}>
@@ -61,7 +63,7 @@ const Event = () => {
       boxShadow={3}
     >
       <IconButton
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         sx={{
           alignSelf: "start",
           transition: "0.3s",

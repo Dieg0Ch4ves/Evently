@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -98,7 +98,7 @@ const Login = () => {
     >
       {/* Botão Voltar */}
       <IconButton
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         size="large"
         sx={{ alignSelf: "start" }}
       >

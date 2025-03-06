@@ -5,9 +5,9 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Layout from "./components/Layout/Layout";
 import Event from "./pages/Event";
-import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
+import { AuthProvider } from "./providers/AuthProvider";
 
 const App = () => {
   return (

@@ -4,11 +4,12 @@ import {
   IconButton,
   Stack,
   Toolbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import { Home } from "@mui/icons-material";
+import { Home, Logout } from "@mui/icons-material";
+import { useAuth } from "../../hooks/useAuth";
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -33,15 +34,16 @@ const Header = () => {
           alignItems={"center"}
           width={"100%"}
         >
-          <Stack direction={"row"} spacing={2} alignItems={"center"}>
-            <Typography variant="h5">Evently</Typography>
-            <IconButton variant="text" onClick={() => navigate("/")}>
-              <Home />
-            </IconButton>
-          </Stack>
+          <Typography variant="h5">Evently</Typography>
 
           {/* Navegação */}
           <Stack direction="row" spacing={2}>
+            <Tooltip title="Home">
+              <IconButton color="inherit" onClick={() => navigate("/")}>
+                <Home />
+              </IconButton>
+            </Tooltip>
+
             <Button onClick={() => navigate("/about")} color="inherit">
               Sobre
             </Button>
@@ -51,9 +53,12 @@ const Header = () => {
                 <Button color="inherit" onClick={() => navigate("/dashboard")}>
                   Dashboard
                 </Button>
-                <Button color="inherit" onClick={logout}>
-                  Sair
-                </Button>
+
+                <Tooltip title="Sair">
+                  <IconButton color="inherit" onClick={logout}>
+                    <Logout />
+                  </IconButton>
+                </Tooltip>
               </>
             ) : (
               <>

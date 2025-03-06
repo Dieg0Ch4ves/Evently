@@ -1,3 +1,4 @@
+import { useEffect, useState, useCallback } from "react";
 import { Add } from "@mui/icons-material";
 import { Masonry } from "@mui/lab";
 import {
@@ -12,11 +13,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import EventService from "../api/EventService";
 import BoxEvent from "../components/BoxEvent/BoxEvent";
 import NewEvent from "../components/NewEvent/NewEvent";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 const Dashboard = () => {
   const [eventRegistrations, setEventRegistrations] = useState([]);
@@ -33,31 +33,31 @@ const Dashboard = () => {
 
   const { user } = useAuth();
 
+  // Memoriza os métodos da API para evitar recriação em cada renderização
   const { handleGetEventById, handleGetEventByIdUser } = EventService();
 
+  const fetchData = useCallback(async () => {
+    if (!user?.registrations) return;
+
+    try {
+      const registrations = await Promise.all(
+        user.registrations.map(async (registration) => {
+          const event = await handleGetEventById(registration.eventId);
+          return event;
+        })
+      );
+
+      const eventsCreatedResponse = await handleGetEventByIdUser(user.id);
+      setEventsCreated(eventsCreatedResponse);
+      setEventRegistrations(registrations);
+    } catch (error) {
+      console.error("Erro ao buscar eventos:", error);
+    }
+  }, [user, handleGetEventById, handleGetEventByIdUser]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.registrations) return;
-
-      try {
-        const registrations = await Promise.all(
-          user.registrations.map(async (registration) => {
-            const event = await handleGetEventById(registration.eventId);
-            return event;
-          })
-        );
-
-        const eventsCreatedResponse = await handleGetEventByIdUser(user.id);
-        console.log(eventsCreatedResponse);
-        setEventsCreated(eventsCreatedResponse);
-        setEventRegistrations(registrations);
-      } catch (error) {
-        console.error("Erro ao buscar eventos:", error);
-      }
-    };
-
     fetchData();
-  }, [user]);
+  }, [fetchData]);
 
   const open = () => {
     setOpenNewEvent(true);
