@@ -10,10 +10,10 @@ import {
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import EventService from "../../api/EventService";
 import FormatDate from "../../utils/FormatDate";
 import { truncateDescription } from "../../utils/truncateDescription";
 import ConfirmDialog from "../ConfirmDialog/ConfirmDialog";
+import eventService from "../../api/eventService";
 
 const BoxEvent = ({ event, userId, setSnackbarData }) => {
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -23,7 +23,7 @@ const BoxEvent = ({ event, userId, setSnackbarData }) => {
   const isUserEvent = event.createdBy === userId;
 
   const { formatDateTime } = FormatDate();
-  const { handleDeleteEvent } = EventService();
+  const { handleDeleteEvent } = eventService();
 
   const handleDelete = async (id) => {
     try {

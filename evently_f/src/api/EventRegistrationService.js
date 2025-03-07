@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-const EventRegistrationService = () => {
+const eventRegistrationService = () => {
   // ============================ FUNCTION SUBSCRIBE EVENT ============================ |
 
   const handleSubscribeEvent = async (eventId, userId) => {
@@ -32,4 +32,4 @@ const EventRegistrationService = () => {
   return { handleSubscribeEvent, handleUnsubscribeEvent };
 };
 
-export default EventRegistrationService;
+export default eventRegistrationService;

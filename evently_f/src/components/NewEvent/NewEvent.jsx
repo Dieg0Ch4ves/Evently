@@ -7,14 +7,14 @@ import {
 } from "@mui/material";
 import PropTypes from "prop-types";
 import { useState } from "react";
-import EventService from "../../api/EventService";
 import FormEvent from "../FormEvent/FormEvent";
 import { useAuth } from "../../hooks/useAuth";
+import eventService from "../../api/eventService";
 
 const NewEvent = ({ open, onClose, setSnackbarData, addEventToList }) => {
   const [event, setEvent] = useState({});
   const { user } = useAuth();
-  const { handlePostEvent } = EventService();
+  const { handlePostEvent } = eventService();
 
   const handleSubmit = async () => {
     try {

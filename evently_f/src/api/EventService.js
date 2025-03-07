@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-const EventService = () => {
+const eventService = () => {
   // ====================== GET DE TODOS OS EVENTOS ====================== |
 
   const handleGetAllEvents = async () => {
@@ -83,4 +83,4 @@ const EventService = () => {
   };
 };
 
-export default EventService;
+export default eventService;

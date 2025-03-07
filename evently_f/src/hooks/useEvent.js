@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import EventService from "../api/EventService";
-import EventRegistrationService from "../api/EventRegistrationService";
 import { useAuth } from "./useAuth";
+import eventService from "../api/eventService";
+import eventRegistrationService from "../api/eventRegistrationService";
+import userService from "../api/userService";
 
 const useEvent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const [event, setEvent] = useState(null);
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openEdit, setOpenEdit] = useState(false);
   const [snackbarData, setSnackbarData] = useState({
@@ -18,32 +20,53 @@ const useEvent = () => {
   });
 
   // ✅ Memoizando os serviços para evitar re-renderizações desnecessárias
-  const eventService = useMemo(() => EventService(), []);
-  const eventRegistrationService = useMemo(
-    () => EventRegistrationService(),
+  const eventServiceMemo = useMemo(() => eventService(), []);
+  const eventRegistrationServiceMemo = useMemo(
+    () => eventRegistrationService(),
     []
   );
+  const userServiceMemo = useMemo(() => userService(), []);
 
   // ✅ Memoizando as funções para evitar re-criação em cada render
   const fetchEvent = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await eventService.handleGetEventById(id);
+      const response = await eventServiceMemo.handleGetEventById(id);
       setEvent(response);
     } catch (error) {
       console.error("Erro ao carregar evento:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [id, eventService]);
+  }, [id, eventServiceMemo]);
 
   useEffect(() => {
     fetchEvent();
   }, [fetchEvent]);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const users = await Promise.all(
+        event.registrations.map(async (registration) => {
+          const response = await userServiceMemo.handleGetUserById(
+            registration.userId
+          );
+          return response;
+        })
+      );
+      console.log(users);
+      setUsers(users);
+    };
+
+    fetchUsers();
+  }, [event, userServiceMemo]);
+
   const handleSubscribe = useCallback(async () => {
     try {
-      await eventRegistrationService.handleSubscribeEvent(event.id, user.id);
+      await eventRegistrationServiceMemo.handleSubscribeEvent(
+        event.id,
+        user.id
+      );
       await refreshUser();
       setEvent((prev) => ({
         ...prev,
@@ -62,7 +85,7 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  }, [event, user.id, eventRegistrationService, refreshUser]);
+  }, [event, user.id, eventRegistrationServiceMemo, refreshUser]);
 
   const handleUnsubscribe = useCallback(async () => {
     try {
@@ -71,7 +94,10 @@ const useEvent = () => {
       );
       if (!userRegistration) return;
 
-      await eventRegistrationService.handleUnsubscribeEvent(event.id, user.id);
+      await eventRegistrationServiceMemo.handleUnsubscribeEvent(
+        event.id,
+        user.id
+      );
       await refreshUser();
 
       setEvent((prev) => ({
@@ -93,11 +119,42 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  }, [event, user.id, eventRegistrationService, refreshUser]);
+  }, [event, user.id, eventRegistrationServiceMemo, refreshUser]);
+
+  const handleRemoveSubscribe = useCallback(
+    async (eventId, userId) => {
+      try {
+        await eventRegistrationServiceMemo.handleUnsubscribeEvent(
+          eventId,
+          userId
+        );
+        await refreshUser();
+
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+
+        setSnackbarData({
+          open: true,
+          message: "Inscrição cancelada!",
+          severity: "info",
+        });
+      } catch (error) {
+        console.error("Erro ao cancelar:", error);
+        setSnackbarData({
+          open: true,
+          message: "Erro ao cancelar inscrição.",
+          severity: "error",
+        });
+      }
+    },
+    [eventRegistrationServiceMemo, refreshUser]
+  );
 
   const handleEdit = useCallback(async () => {
     try {
-      const updatedEvent = await eventService.handlePutEvent(event.id, event);
+      const updatedEvent = await eventServiceMemo.handlePutEvent(
+        event.id,
+        event
+      );
       setEvent(updatedEvent);
       setSnackbarData({
         open: true,
@@ -114,11 +171,11 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  }, [event, eventService]);
+  }, [event, eventServiceMemo]);
 
   const handleDelete = useCallback(async () => {
     try {
-      await eventService.handleDeleteEvent(event.id);
+      await eventServiceMemo.handleDeleteEvent(event.id);
       setSnackbarData({
         open: true,
         message: "Evento excluído!",
@@ -133,7 +190,7 @@ const useEvent = () => {
         severity: "error",
       });
     }
-  }, [event, eventService, navigate]);
+  }, [event, eventServiceMemo, navigate]);
 
   const handleCloseSnackbar = useCallback(() => {
     setSnackbarData((prev) => ({ ...prev, open: false }));
@@ -149,12 +206,14 @@ const useEvent = () => {
     setSnackbarData,
     handleSubscribe,
     handleUnsubscribe,
+    handleRemoveSubscribe,
     handleEdit,
     handleDelete,
     isUserRegistered: event?.registrations?.some((r) => r.userId === user.id),
     isCreatedByUser: event?.createdBy === user.id,
     availableSeats: event?.capacity - (event?.registrations?.length || 0),
     handleCloseSnackbar,
+    users,
   };
 };
 

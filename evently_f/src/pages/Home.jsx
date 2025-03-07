@@ -12,10 +12,10 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import EventService from "../api/EventService";
 import BoxEvent from "../components/BoxEvent/BoxEvent";
 import { useAuth } from "../hooks/useAuth";
 import { Search } from "@mui/icons-material";
+import eventService from "../api/eventService";
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -31,13 +31,13 @@ const Home = () => {
 
   const { user } = useAuth();
 
-  const eventService = useMemo(() => EventService(), []);
+  const eventServiceMemo = useMemo(() => eventService(), []);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await eventService.handleGetAllEvents();
+        const response = await eventServiceMemo.handleGetAllEvents();
         setEvents(response);
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
@@ -52,7 +52,7 @@ const Home = () => {
     };
 
     fetchData();
-  }, [eventService]);
+  }, [eventServiceMemo]);
 
   const handleCloseSnackbar = () => {
     setSnackbarData((prev) => ({ ...prev, open: false }));

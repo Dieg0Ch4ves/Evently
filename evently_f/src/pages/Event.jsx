@@ -1,8 +1,9 @@
-import { ArrowBack, Delete } from "@mui/icons-material";
+import { ArrowBack, Delete, Person } from "@mui/icons-material";
 import {
   Alert,
   Backdrop,
   Button,
+  Chip,
   CircularProgress,
   Divider,
   IconButton,
@@ -33,15 +34,15 @@ const Event = () => {
     setOpenEdit,
     handleSubscribe,
     handleUnsubscribe,
+    handleRemoveSubscribe,
     handleEdit,
     handleDelete,
     isUserRegistered,
     isCreatedByUser,
     availableSeats,
     handleCloseSnackbar,
+    users,
   } = useEvent();
-
-  console.log(event);
 
   if (isLoading) {
     return (
@@ -61,6 +62,7 @@ const Event = () => {
       mt={4}
       borderRadius={3}
       boxShadow={3}
+      spacing={2}
     >
       <IconButton
         onClick={() => navigate(-1)}
@@ -73,7 +75,6 @@ const Event = () => {
       >
         <ArrowBack fontSize="large" />
       </IconButton>
-
       <Stack width="100%">
         <img
           src={
@@ -90,7 +91,6 @@ const Event = () => {
           }}
         />
       </Stack>
-
       <Typography
         variant="h3"
         fontWeight={600}
@@ -99,13 +99,10 @@ const Event = () => {
       >
         {event.title}
       </Typography>
-
       <Divider sx={{ my: 2 }} />
-
       <Typography variant="body1" sx={{ wordBreak: "break-word" }}>
         <strong>Descrição:</strong> {event.description}
       </Typography>
-
       <Stack direction="row" justifyContent="space-between" mt={2}>
         <Typography variant="body1">
           <strong>Data:</strong>{" "}
@@ -115,13 +112,10 @@ const Event = () => {
           <strong>Capacidade:</strong> {event.capacity}
         </Typography>
       </Stack>
-
       <Typography variant="body1" mt={1}>
         <strong>Local:</strong> {event.localEvent}
       </Typography>
-
       <Divider sx={{ my: 2 }} />
-
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="body1">
           <strong>Vagas disponíveis:</strong> {availableSeats}/{event.capacity}
@@ -173,6 +167,36 @@ const Event = () => {
           </Button>
         )}
       </Stack>
+
+      {isCreatedByUser && (
+        <Stack
+          width={"100%"}
+          direction={"row"}
+          justifyContent={"space-between"}
+          spacing={2}
+        >
+          <Typography variant="body1" mt={2}>
+            <strong>Inscritos:</strong>
+          </Typography>
+          <Stack
+            direction="column"
+            flexWrap="wrap"
+            justifyContent="flex-start"
+            alignItems="center"
+            spacing={1}
+            width={"100%"}
+          >
+            {users.map((user) => (
+              <Chip
+                key={user.id}
+                icon={<Person />}
+                label={user.name}
+                onDelete={() => handleRemoveSubscribe(event.id, user.id)}
+              />
+            ))}
+          </Stack>
+        </Stack>
+      )}
 
       <Snackbar
         open={snackbarData.open}

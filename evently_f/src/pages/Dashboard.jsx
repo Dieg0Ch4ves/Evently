@@ -13,10 +13,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import EventService from "../api/EventService";
 import BoxEvent from "../components/BoxEvent/BoxEvent";
 import NewEvent from "../components/NewEvent/NewEvent";
 import { useAuth } from "../hooks/useAuth";
+import eventService from "../api/eventService";
 
 const Dashboard = () => {
   const [eventRegistrations, setEventRegistrations] = useState([]);
@@ -34,7 +34,7 @@ const Dashboard = () => {
   const { user } = useAuth();
 
   // Memoriza os métodos da API para evitar recriação em cada renderização
-  const { handleGetEventById, handleGetEventByIdUser } = EventService();
+  const { handleGetEventById, handleGetEventByIdUser } = eventService();
 
   const fetchData = useCallback(async () => {
     if (!user?.registrations) return;
