@@ -31,7 +31,23 @@ const AdminPanel = () => {
     } catch (error) {
       console.error(error);
     }
+    0;
   }, [userServiceMemo]);
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir este usuário?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await userServiceMemo.handleDeleteUserById(id);
+        console.log(response);
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
 
   const getRoleStyle = (role) => {
     switch (role) {
@@ -84,7 +100,7 @@ const AdminPanel = () => {
                     </IconButton>
                   ) : user.role === "USER" ? (
                     <Tooltip title="Excluir usuário" placement="left">
-                      <IconButton>
+                      <IconButton onClick={() => handleDelete(user.id)}>
                         <Delete />
                       </IconButton>
                     </Tooltip>

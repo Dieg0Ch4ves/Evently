@@ -6,7 +6,6 @@ import com.evently.evently.entities.User;
 import com.evently.evently.repositories.UserRepository;
 import com.evently.evently.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,6 +25,8 @@ public class UserController {
     private final UserRepository repository;
     private final TokenService tokenService;
 
+    private static final String KEY_USER_NOT_FOUND = "Usuário não encontrado.";
+
     public UserController(AuthenticationManager authenticationManager, UserRepository repository, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.repository = repository;
@@ -34,7 +35,7 @@ public class UserController {
 
     // End-Point de login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO data) {
+    public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody AuthenticationRequestDTO data) {
         try {
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
@@ -43,9 +44,9 @@ public class UserController {
 
             return ResponseEntity.ok(new AuthenticationResponseDTO(token));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
+            throw  new BadCredentialsException("Usuário ou senha inválidos");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar a requisição");
+            throw new RuntimeException("Erro ao autenticar usuário:" + e);
         }
     }
 
@@ -78,7 +79,7 @@ public class UserController {
         }
 
         User user = repository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new RuntimeException(KEY_USER_NOT_FOUND));
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -98,7 +99,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable UUID id) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new RuntimeException(KEY_USER_NOT_FOUND));
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -115,22 +116,35 @@ public class UserController {
                 .ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO));
     }
 
-   @GetMapping("/all")
-   public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-       List<User> users = repository.findAll();
-       List<UserResponseDTO> userResponseDTOs = users.stream().map(user -> {
-           Set<EventRegistrationResponseDTO> eventRegistrationsDTO = new HashSet<>();
-           for (EventRegistration eventRegistration : user.getRegistrations()) {
-               EventRegistrationResponseDTO eventRegistrationDTO = new EventRegistrationResponseDTO(eventRegistration.getId(),
-                       eventRegistration.getEvent().getId(), eventRegistration.getUser().getId(),
-                       eventRegistration.getRegistrationDate());
-               eventRegistrationsDTO.add(eventRegistrationDTO);
-           }
-           return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO);
-       }).toList();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable UUID id) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException(KEY_USER_NOT_FOUND));
 
-       return ResponseEntity.ok(userResponseDTOs);
-   }
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        repository.delete(user);
+        return ResponseEntity.ok("Usuário deletado com sucesso!");
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<User> users = repository.findAll();
+        List<UserResponseDTO> userResponseDTOs = users.stream().map(user -> {
+            Set<EventRegistrationResponseDTO> eventRegistrationsDTO = new HashSet<>();
+            for (EventRegistration eventRegistration : user.getRegistrations()) {
+                EventRegistrationResponseDTO eventRegistrationDTO = new EventRegistrationResponseDTO(eventRegistration.getId(),
+                        eventRegistration.getEvent().getId(), eventRegistration.getUser().getId(),
+                        eventRegistration.getRegistrationDate());
+                eventRegistrationsDTO.add(eventRegistrationDTO);
+            }
+            return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO);
+        }).toList();
+
+        return ResponseEntity.ok(userResponseDTOs);
+    }
 
     // Metodo de extração de token
     private String extractTokenFromRequest(HttpServletRequest request) {

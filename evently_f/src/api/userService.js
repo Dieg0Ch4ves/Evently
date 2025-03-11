@@ -27,7 +27,17 @@ const userService = () => {
     }
   }
 
-  return { handleGetUserById, handleGetAllUsers };
+  async function handleDeleteUserById(id) {
+    try {
+      const response = await apiClient.delete(`/auth/${id}`);
+
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data || "Erro ao deletar usuário");
+    }
+  }
+
+  return { handleGetUserById, handleGetAllUsers, handleDeleteUserById };
 };
 
 export default userService;
