@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -113,6 +114,23 @@ public class UserController {
         return ResponseEntity
                 .ok(new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO));
     }
+
+   @GetMapping("/all")
+   public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+       List<User> users = repository.findAll();
+       List<UserResponseDTO> userResponseDTOs = users.stream().map(user -> {
+           Set<EventRegistrationResponseDTO> eventRegistrationsDTO = new HashSet<>();
+           for (EventRegistration eventRegistration : user.getRegistrations()) {
+               EventRegistrationResponseDTO eventRegistrationDTO = new EventRegistrationResponseDTO(eventRegistration.getId(),
+                       eventRegistration.getEvent().getId(), eventRegistration.getUser().getId(),
+                       eventRegistration.getRegistrationDate());
+               eventRegistrationsDTO.add(eventRegistrationDTO);
+           }
+           return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(), eventRegistrationsDTO);
+       }).toList();
+
+       return ResponseEntity.ok(userResponseDTOs);
+   }
 
     // Metodo de extração de token
     private String extractTokenFromRequest(HttpServletRequest request) {

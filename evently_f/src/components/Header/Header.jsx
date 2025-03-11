@@ -8,7 +8,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Home, Logout } from "@mui/icons-material";
+import {
+  AdminPanelSettings,
+  Dashboard,
+  Home,
+  Logout,
+} from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
 
 const Header = () => {
@@ -39,23 +44,41 @@ const Header = () => {
           {/* Navegação */}
           <Stack direction="row" spacing={2}>
             <Tooltip title="Home">
-              <IconButton color="inherit" onClick={() => navigate("/")}>
+              <IconButton
+                size="large"
+                color="inherit"
+                onClick={() => navigate("/")}
+              >
                 <Home />
               </IconButton>
             </Tooltip>
 
-            <Button onClick={() => navigate("/about")} color="inherit">
-              Sobre
-            </Button>
-
             {user ? (
               <>
-                <Button color="inherit" onClick={() => navigate("/dashboard")}>
-                  Dashboard
-                </Button>
+                <Tooltip title="Dashboard">
+                  <IconButton
+                    size="large"
+                    color="inherit"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    <Dashboard />
+                  </IconButton>
+                </Tooltip>
+
+                {user.role === "ADMIN" && (
+                  <Tooltip title="Admin">
+                    <IconButton
+                      size="large"
+                      color="inherit"
+                      onClick={() => navigate("/admin")}
+                    >
+                      <AdminPanelSettings />
+                    </IconButton>
+                  </Tooltip>
+                )}
 
                 <Tooltip title="Sair">
-                  <IconButton color="inherit" onClick={logout}>
+                  <IconButton size="large" color="inherit" onClick={logout}>
                     <Logout />
                   </IconButton>
                 </Tooltip>

@@ -49,6 +49,8 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/auth/**").hasAnyRole("USER", "ADMIN")
 
+                        .requestMatchers(HttpMethod.GET, "/auth/all").hasRole("ADMIN")
+
                         .anyRequest().authenticated())
                 .cors(cors -> cors
                         .configurationSource(request -> {

@@ -8,6 +8,7 @@ import Event from "./pages/Event";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import { AuthProvider } from "./providers/AuthProvider";
+import AdminPanel from "./pages/AdminPanel";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
               </Layout>
             }
           />
+
           <Route
             path="register"
             element={
@@ -31,6 +33,7 @@ const App = () => {
               </Layout>
             }
           />
+
           <Route
             path="event/:id"
             element={
@@ -41,6 +44,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="dashboard"
             element={
@@ -51,6 +55,18 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="admin"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <AdminPanel />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
           {/* Rotas sem Header */}
           <Route path="login" element={<Login />} />
           {/* Página de erro */}
