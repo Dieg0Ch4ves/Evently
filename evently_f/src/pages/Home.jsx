@@ -1,21 +1,22 @@
+import { Group, Search } from "@mui/icons-material";
 import Masonry from "@mui/lab/Masonry";
 import {
   Alert,
   Backdrop,
   CircularProgress,
+  Fade,
+  InputAdornment,
   MenuItem,
+  Paper,
   Snackbar,
   Stack,
   TextField,
   Typography,
-  Box,
-  InputAdornment,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
+import eventService from "../api/eventService";
 import BoxEvent from "../components/BoxEvent/BoxEvent";
 import { useAuth } from "../hooks/useAuth";
-import { Search } from "@mui/icons-material";
-import eventService from "../api/eventService";
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -60,7 +61,6 @@ const Home = () => {
 
   const filteredEvents = events.filter((event) => {
     const eventDate = new Date(event.dateEvent);
-    // Ajusta para o horário local
     const localDate = new Date(
       eventDate.getTime() - eventDate.getTimezoneOffset() * 60000
     );
@@ -74,92 +74,105 @@ const Home = () => {
   });
 
   return (
-    <Stack padding={4} spacing={3}>
-      {isLoading ? (
-        <Backdrop open={isLoading} style={{ zIndex: 1 }}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      ) : (
-        <Stack spacing={3} alignItems="center" justifyContent="center">
-          <Typography variant="h2" textAlign="center">
-            Lista de Eventos
+    <Fade in={true} timeout={500}>
+      <Stack padding={{ md: 4, sm: 2 }} spacing={3} alignItems="center">
+        <Stack
+          component={Paper}
+          alignItems={"center"}
+          padding={2}
+          spacing={4}
+          width="100%"
+        >
+          <Typography variant="h2" textAlign="center" gutterBottom>
+            Bem-vindo ao Evently{user && ", " + user?.name}!
           </Typography>
+          <Typography variant="body1" textAlign="center" maxWidth="400px">
+            Explore e participe de eventos incríveis! Utilize os filtros para
+            buscar eventos por título, data ou capacidade mínima. Conecte-se com
+            a comunidade e aproveite as melhores oportunidades.
+          </Typography>
+        </Stack>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              gap: 2,
-              width: "100%",
-              maxWidth: "800px",
-              alignItems: "center",
+        <Stack
+          direction={{ md: "row", sm: "column" }}
+          spacing={{ md: 2, sm: 4, xs: 2 }}
+          width={"100%"}
+        >
+          <TextField
+            label="Buscar por título"
+            variant="outlined"
+            fullWidth
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <TextField
+            label="Filtrar por Data"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            sx={{ minWidth: "200px" }}
+          />
+          <TextField
+            label="Capacidade mínima"
+            select
+            value={filterCapacity}
+            onChange={(e) => setFilterCapacity(e.target.value)}
+            sx={{ minWidth: "400px" }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Group />
+                </InputAdornment>
+              ),
             }}
           >
-            <TextField
-              label="Buscar por título"
-              variant="outlined"
-              fullWidth
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Filtrar por Data"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={filterDate}
-              onChange={(e) => setFilterDate(e.target.value)}
-              sx={{ minWidth: "150px" }}
-            />
-            <TextField
-              label="Capacidade mínima"
-              select
-              value={filterCapacity}
-              onChange={(e) => setFilterCapacity(e.target.value)}
-              sx={{ minWidth: "150px" }}
-            >
-              <MenuItem value="">Todos</MenuItem>
-              <MenuItem value="10">10+</MenuItem>
-              <MenuItem value="50">50+</MenuItem>
-              <MenuItem value="100">100+</MenuItem>
-            </TextField>
-          </Box>
-
-          {filteredEvents.length !== 0 ? (
-            <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={4}>
-              {filteredEvents.map((event, index) => (
-                <BoxEvent
-                  key={index}
-                  event={event}
-                  userId={user?.id}
-                  setSnackbarData={setSnackbarData}
-                />
-              ))}
-            </Masonry>
-          ) : (
-            <Typography variant="caption">
-              No momento não há eventos disponíveis!
-            </Typography>
-          )}
+            <MenuItem value="">Todos</MenuItem>
+            <MenuItem value="10">10+</MenuItem>
+            <MenuItem value="50">50+</MenuItem>
+            <MenuItem value="100">100+</MenuItem>
+          </TextField>
         </Stack>
-      )}
 
-      <Snackbar
-        open={snackbarData.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarData.severity}>
-          {snackbarData.message}
-        </Alert>
-      </Snackbar>
-    </Stack>
+        {isLoading ? (
+          <Backdrop open={isLoading} style={{ zIndex: 1 }}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        ) : filteredEvents.length !== 0 ? (
+          <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={4}>
+            {filteredEvents.map((event, index) => (
+              <BoxEvent
+                key={index}
+                event={event}
+                userId={user?.id}
+                setSnackbarData={setSnackbarData}
+              />
+            ))}
+          </Masonry>
+        ) : (
+          <Typography variant="subtitle1" color="textSecondary">
+            No momento, não há eventos disponíveis. Volte em breve!
+          </Typography>
+        )}
+
+        <Snackbar
+          open={snackbarData.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbarData.severity}>
+            {snackbarData.message}
+          </Alert>
+        </Snackbar>
+      </Stack>
+    </Fade>
   );
 };
 
