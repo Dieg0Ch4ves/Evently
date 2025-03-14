@@ -27,6 +27,8 @@ const userService = () => {
     }
   }
 
+  // =================== FUNÇÃO PARA DELETAR USUARIO PELO ID =================== |
+
   async function handleDeleteUserById(id) {
     try {
       const response = await apiClient.delete(`/auth/${id}`);
@@ -37,7 +39,22 @@ const userService = () => {
     }
   }
 
-  return { handleGetUserById, handleGetAllUsers, handleDeleteUserById };
+  async function handleActivateUserByToken(token) {
+    try {
+      const response = await apiClient.patch(`/auth/activate?token=${token}`);
+
+      return response;
+    } catch (error) {
+      return error.response?.data || "Erro ao ativar usuário";
+    }
+  }
+
+  return {
+    handleGetUserById,
+    handleGetAllUsers,
+    handleDeleteUserById,
+    handleActivateUserByToken,
+  };
 };
 
 export default userService;

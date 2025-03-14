@@ -56,8 +56,9 @@ export const AuthProvider = ({ children }) => {
       setToken(authToken);
       localStorage.setItem("user", JSON.stringify(userResponse.data));
       localStorage.setItem("token", authToken);
+      return response;
     } catch (error) {
-      throw new Error(error.response?.data || "Erro ao fazer login");
+      return error.response?.data || "Erro ao fazer login";
     }
   };
 

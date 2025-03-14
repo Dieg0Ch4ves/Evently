@@ -1,11 +1,17 @@
 package com.evently.evently.controllers;
 
 import com.evently.evently.dtos.*;
+import com.evently.evently.entities.ActivationToken;
 import com.evently.evently.entities.EventRegistration;
 import com.evently.evently.entities.User;
+import com.evently.evently.exceptions.UserAuthenticateException;
+import com.evently.evently.exceptions.UserNotActiveException;
+import com.evently.evently.repositories.ActivationTokenRepository;
 import com.evently.evently.repositories.UserRepository;
+import com.evently.evently.service.EmailService;
 import com.evently.evently.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,13 +31,23 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository repository;
     private final TokenService tokenService;
+    private final ActivationTokenRepository activationTokenRepository;
+    private final EmailService emailService;
 
     private static final String KEY_USER_NOT_FOUND = "Usuário não encontrado.";
 
-    public UserController(AuthenticationManager authenticationManager, UserRepository repository, TokenService tokenService) {
+    @Value("${frontend.url}")
+    private String FRONT_URL;
+
+    public UserController(AuthenticationManager authenticationManager,
+                          UserRepository repository, TokenService tokenService,
+                          ActivationTokenRepository activationTokenRepository,
+                          EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.repository = repository;
         this.tokenService = tokenService;
+        this.activationTokenRepository = activationTokenRepository;
+        this.emailService = emailService;
     }
 
     // End-Point de login
@@ -40,13 +57,16 @@ public class UserController {
             var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
             var auth = this.authenticationManager.authenticate(usernamePassword);
             var user = (User) auth.getPrincipal();
+
+            if (Boolean.FALSE.equals(user.getActive())) {
+                throw new UserNotActiveException("Usuário não está ativo");
+            }
+
             var token = tokenService.generateToken(user);
 
             return ResponseEntity.ok(new AuthenticationResponseDTO(token));
         } catch (BadCredentialsException e) {
-            throw  new BadCredentialsException("Usuário ou senha inválidos");
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao autenticar usuário:" + e);
+            throw new BadCredentialsException("Usuário ou senha inválidos");
         }
     }
 
@@ -61,10 +81,44 @@ public class UserController {
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
         User newUser = new User(data.name(), data.email(), encryptedPassword, data.role());
+        newUser.setActive(false);
 
         this.repository.save(newUser);
 
-        return ResponseEntity.status(201).body("Usuário cadastrado com sucesso!");
+        // Criar token de ativação
+        String activationToken = UUID.randomUUID().toString();
+        ActivationToken tokenEntity = new ActivationToken(newUser, activationToken, LocalDateTime.now().plusHours(24));
+
+        activationTokenRepository.save(tokenEntity);
+
+        // Enviar e-mail de ativação
+        String activationLink = FRONT_URL + "/activate?token=" + activationToken;
+        emailService.sendActivationEmail(newUser.getEmail(), activationLink);
+
+        return ResponseEntity.status(201).body("Usuário cadastrado com sucesso! Verifique seu e-mail para ativação.");
+    }
+
+
+    @PatchMapping("/activate")
+    public ResponseEntity<String> activateUser(@RequestParam("token") String token) {
+        ActivationToken activationToken = activationTokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido ou expirado"));
+
+        if (activationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Token expirado. Solicite um novo.");
+        }
+
+        User user = activationToken.getUser();
+        if (user.getActive()) {
+            return ResponseEntity.ok("Usuário já está ativo.");
+        }
+
+        user.setActive(true);
+        repository.save(user);
+
+        activationTokenRepository.delete(activationToken);
+
+        return ResponseEntity.ok("Usuário ativado com sucesso!");
     }
 
     // End-point para obter o objeto do usuario através do token

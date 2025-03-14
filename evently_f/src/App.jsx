@@ -9,6 +9,7 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import { AuthProvider } from "./providers/AuthProvider";
 import AdminPanel from "./pages/AdminPanel";
+import ActivateUser from "./pages/ActivateUser";
 
 const App = () => {
   return (
@@ -69,6 +70,9 @@ const App = () => {
 
           {/* Rotas sem Header */}
           <Route path="login" element={<Login />} />
+
+          <Route path="activate" element={<ActivateUser />} />
+
           {/* Página de erro */}
           <Route path="*" element={<NotFound />} />
         </Routes>

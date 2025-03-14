@@ -24,6 +24,8 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    private Boolean active;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EventRegistration> registrations = new HashSet<>();
@@ -70,7 +72,7 @@ public class User implements UserDetails {
     }
 
     public User() {
-        
+
     }
 
     public Set<EventRegistration> getRegistrations() {
@@ -117,6 +119,14 @@ public class User implements UserDetails {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public void setRegistrations(Set<EventRegistration> registrations) {

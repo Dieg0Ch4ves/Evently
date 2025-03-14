@@ -62,21 +62,25 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
-      try {
-        await login(formData);
+      const response = await login(formData);
+
+      console.log(response);
+
+      if (response?.status !== 200) {
         setSnackbar({
           open: true,
-          message: "Login realizado com sucesso!",
-          type: "success",
-        });
-        navigate("/");
-      } catch (error) {
-        setSnackbar({
-          open: true,
-          message: error.message || "Erro ao realizar login.",
+          message: response?.message || "Erro ao realizar login.",
           type: "error",
         });
+        return;
       }
+
+      setSnackbar({
+        open: true,
+        message: "Login realizado com sucesso!",
+        type: "success",
+      });
+      navigate("/");
     }
   };
 
