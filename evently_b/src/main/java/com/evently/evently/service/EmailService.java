@@ -32,4 +32,21 @@ public class EmailService {
             throw new EmailSendException("Erro ao enviar e-mail de ativação");
         }
     }
+
+    public void sendResetPasswordEmail(String to, String resetLink ) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Redefinição de Senha");
+            helper.setText("<p>Clique no link abaixo para você definir uma nova senha:</p>" +
+                    "<a href='" + resetLink + "'>Acessar</a>", true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new EmailSendException("Erro ao enviar e-mail de redefinição de senha");
+        }
+    }
+
 }

@@ -39,6 +39,8 @@ const userService = () => {
     }
   }
 
+  // =================== FUNÇÃO PARA ATIVAR USUARIO PELO TOKEN =================== |
+
   async function handleActivateUserByToken(token) {
     try {
       const response = await apiClient.patch(`/auth/activate?token=${token}`);
@@ -49,11 +51,24 @@ const userService = () => {
     }
   }
 
+  async function handleForgotPassword(email) {
+    try {
+      const response = await apiClient.post(`/auth/forgot-password`, {
+        email,
+      });
+
+      return response;
+    } catch (error) {
+      return error.response?.data || "Erro ao requisitar redefinição de senha";
+    }
+  }
+
   return {
     handleGetUserById,
     handleGetAllUsers,
     handleDeleteUserById,
     handleActivateUserByToken,
+    handleForgotPassword,
   };
 };
 

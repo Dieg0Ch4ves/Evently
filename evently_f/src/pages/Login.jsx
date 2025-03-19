@@ -176,11 +176,9 @@ const Login = () => {
 
       {/* Links para recuperação e registro */}
       <Stack alignItems="center" spacing={1} mt={2} width="100%">
-        <Typography variant="body2">
-          <a href="#" style={{ textDecoration: "none", color: "#1976d2" }}>
-            Esqueci minha senha!
-          </a>
-        </Typography>
+        <Button size="small" variant="text" href="forgot-password">
+          Esqueci minha senha!
+        </Button>
 
         <Divider flexItem sx={{ width: "100%" }} />
 

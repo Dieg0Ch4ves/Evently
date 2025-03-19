@@ -4,8 +4,8 @@ import com.evently.evently.dtos.*;
 import com.evently.evently.entities.ActivationToken;
 import com.evently.evently.entities.EventRegistration;
 import com.evently.evently.entities.User;
-import com.evently.evently.exceptions.UserAuthenticateException;
 import com.evently.evently.exceptions.UserNotActiveException;
+import com.evently.evently.exceptions.UserNotFoundException;
 import com.evently.evently.repositories.ActivationTokenRepository;
 import com.evently.evently.repositories.UserRepository;
 import com.evently.evently.service.EmailService;
@@ -37,7 +37,7 @@ public class UserController {
     private static final String KEY_USER_NOT_FOUND = "Usuário não encontrado.";
 
     @Value("${frontend.url}")
-    private String FRONT_URL;
+    private String frontUrl;
 
     public UserController(AuthenticationManager authenticationManager,
                           UserRepository repository, TokenService tokenService,
@@ -92,7 +92,7 @@ public class UserController {
         activationTokenRepository.save(tokenEntity);
 
         // Enviar e-mail de ativação
-        String activationLink = FRONT_URL + "/activate?token=" + activationToken;
+        String activationLink = frontUrl + "/activate?token=" + activationToken;
         emailService.sendActivationEmail(newUser.getEmail(), activationLink);
 
         return ResponseEntity.status(201).body("Usuário cadastrado com sucesso! Verifique seu e-mail para ativação.");
@@ -109,7 +109,7 @@ public class UserController {
         }
 
         User user = activationToken.getUser();
-        if (user.getActive()) {
+        if (Boolean.TRUE.equals(user.getActive())) {
             return ResponseEntity.ok("Usuário já está ativo.");
         }
 
@@ -133,7 +133,7 @@ public class UserController {
         }
 
         User user = repository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException(KEY_USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(KEY_USER_NOT_FOUND));
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -153,7 +153,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable UUID id) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException(KEY_USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(KEY_USER_NOT_FOUND));
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
@@ -173,7 +173,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable UUID id) {
         User user = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException(KEY_USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(KEY_USER_NOT_FOUND));
 
         if (user == null) {
             return ResponseEntity.notFound().build();
@@ -199,6 +199,25 @@ public class UserController {
 
         return ResponseEntity.ok(userResponseDTOs);
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequestDTO data) {
+        User user = repository.findByEmail(data.email())
+                .orElseThrow(() -> new UserNotFoundException(KEY_USER_NOT_FOUND));
+
+        // Criar token de recuperação de senha
+        String resetToken = UUID.randomUUID().toString();
+        ActivationToken tokenEntity = new ActivationToken(user, resetToken, LocalDateTime.now().plusHours(24));
+
+        activationTokenRepository.save(tokenEntity);
+
+        // Enviar e-mail de recuperação de senha
+        String resetLink = frontUrl + "/reset-password?token=" + resetToken;
+        emailService.sendResetPasswordEmail(user.getEmail(), resetLink);
+
+        return ResponseEntity.ok("E-mail de recuperação de senha enviado com sucesso!");
+    }
+
 
     // Metodo de extração de token
     private String extractTokenFromRequest(HttpServletRequest request) {

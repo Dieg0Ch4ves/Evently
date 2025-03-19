@@ -1,15 +1,16 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
-import Register from "./pages/Register";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
-import Event from "./pages/Event";
-import ProtectedRoute from "./utils/ProtectedRoute";
-import Dashboard from "./pages/Dashboard";
-import { AuthProvider } from "./providers/AuthProvider";
-import AdminPanel from "./pages/AdminPanel";
 import ActivateUser from "./pages/ActivateUser";
+import AdminPanel from "./pages/AdminPanel";
+import Dashboard from "./pages/Dashboard";
+import Event from "./pages/Event";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import { AuthProvider } from "./providers/AuthProvider";
+import ProtectedRoute from "./utils/ProtectedRoute";
 
 const App = () => {
   return (
@@ -72,6 +73,8 @@ const App = () => {
           <Route path="login" element={<Login />} />
 
           <Route path="activate" element={<ActivateUser />} />
+
+          <Route path="forgot-password" element={<ForgotPassword />} />
 
           {/* Página de erro */}
           <Route path="*" element={<NotFound />} />

@@ -1,4 +1,4 @@
-import { ArrowBack, Person, PersonAdd } from "@mui/icons-material";
+import { ArrowBack, Email, Person, PersonAdd } from "@mui/icons-material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
@@ -137,6 +137,15 @@ const Register = () => {
             error={!!errors.email}
             helperText={errors.email}
             fullWidth
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Email />
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <FormControl fullWidth error={!!errors.password}>
             <OutlinedInput
