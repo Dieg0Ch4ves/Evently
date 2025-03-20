@@ -7,6 +7,9 @@ import {
   Stack,
   TextField,
   Typography,
+  Snackbar,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +19,12 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    type: "success",
+  });
 
   const { handleForgotPassword } = userService();
 
@@ -31,11 +40,33 @@ const ForgotPassword = () => {
   const handleSubmit = async () => {
     if (validateEmail(email)) {
       setError("");
+      setLoading(true);
       const response = await handleForgotPassword(email);
-      console.log("E-mail válido:", response);
+      setLoading(false);
+
+      if (response.status === 200) {
+        setSnackbar({
+          open: true,
+          message: "E-mail enviado com sucesso!",
+          type: "success",
+        });
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        setSnackbar({
+          open: true,
+          message: response.message || "Erro ao enviar e-mail",
+          type: "error",
+        });
+      }
     } else {
       setError("Por favor, insira um e-mail válido.");
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -75,10 +106,21 @@ const ForgotPassword = () => {
           sx={{ alignSelf: "center" }}
           variant="contained"
           onClick={handleSubmit}
+          disabled={loading}
         >
-          Enviar
+          {loading ? <CircularProgress size={24} /> : "Enviar"}
         </Button>
       </Stack>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.type}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Stack>
   );
 };

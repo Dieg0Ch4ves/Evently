@@ -51,10 +51,27 @@ const userService = () => {
     }
   }
 
+  // =================== FUNÇÃO PARA REDEFINIR SENHA PELO EMAIL =================== |
+
   async function handleForgotPassword(email) {
     try {
       const response = await apiClient.post(`/auth/forgot-password`, {
         email,
+      });
+
+      return response;
+    } catch (error) {
+      return error.response?.data || "Erro ao requisitar redefinição de senha";
+    }
+  }
+
+  // =================== FUNÇÃO PARA REDEFINIR SENHA PELO TOKEN =================== |
+
+  async function handleResetPassword(token, newPassword) {
+    try {
+      const response = await apiClient.patch(`/auth/reset-password`, {
+        token,
+        newPassword,
       });
 
       return response;
@@ -69,6 +86,7 @@ const userService = () => {
     handleDeleteUserById,
     handleActivateUserByToken,
     handleForgotPassword,
+    handleResetPassword,
   };
 };
 

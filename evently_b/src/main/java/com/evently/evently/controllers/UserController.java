@@ -218,6 +218,25 @@ public class UserController {
         return ResponseEntity.ok("E-mail de recuperação de senha enviado com sucesso!");
     }
 
+    @PatchMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequestDTO data) {
+        ActivationToken tokenEntity = activationTokenRepository.findByToken(data.token())
+                .orElseThrow(() -> new RuntimeException("Token inválido ou expirado"));
+
+        if (tokenEntity.getExpiresAt().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Token expirado. Solicite um novo.");
+        }
+
+        User user = tokenEntity.getUser();
+        String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
+        user.setPassword(encryptedPassword);
+        repository.save(user);
+
+        activationTokenRepository.delete(tokenEntity);
+
+        return ResponseEntity.ok("Senha redefinida com sucesso!");
+    }
+
 
     // Metodo de extração de token
     private String extractTokenFromRequest(HttpServletRequest request) {

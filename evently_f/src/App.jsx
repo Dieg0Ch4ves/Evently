@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import { AuthProvider } from "./providers/AuthProvider";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
   return (
@@ -75,6 +76,8 @@ const App = () => {
           <Route path="activate" element={<ActivateUser />} />
 
           <Route path="forgot-password" element={<ForgotPassword />} />
+
+          <Route path="reset-password" element={<ResetPassword />} />
 
           {/* Página de erro */}
           <Route path="*" element={<NotFound />} />

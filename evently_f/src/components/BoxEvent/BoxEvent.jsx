@@ -50,10 +50,9 @@ const BoxEvent = ({ event, userId, setSnackbarData }) => {
     <Paper
       elevation={5}
       sx={{
-        maxWidth: 500,
+        maxWidth: { md: 500, xs: 300 },
         padding: 3,
         borderRadius: 3,
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
         transition: "all 0.3s ease",
         "&:hover": {
           transform: "scale(1.02)",
@@ -93,7 +92,7 @@ const BoxEvent = ({ event, userId, setSnackbarData }) => {
 
       {/* Descrição */}
       <Typography
-        variant="body1"
+        variant={{ sm: "body1", md: "caption" }}
         sx={{ mt: 2, color: "#555", wordWrap: "break-word" }}
       >
         {truncateDescription(event.description, 100)}

@@ -75,7 +75,7 @@ const Home = () => {
 
   return (
     <Fade in={true} timeout={500}>
-      <Stack padding={{ md: 4, sm: 2 }} spacing={3} alignItems="center">
+      <Stack padding={{ sm: 2, md: 1 }} spacing={3} alignItems="center">
         <Stack
           component={Paper}
           alignItems={"center"}
@@ -146,16 +146,18 @@ const Home = () => {
             <CircularProgress color="inherit" />
           </Backdrop>
         ) : filteredEvents.length !== 0 ? (
-          <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={4}>
-            {filteredEvents.map((event, index) => (
-              <BoxEvent
-                key={index}
-                event={event}
-                userId={user?.id}
-                setSnackbarData={setSnackbarData}
-              />
-            ))}
-          </Masonry>
+          <Stack alignContent={"center"}>
+            <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={4}>
+              {filteredEvents.map((event, index) => (
+                <BoxEvent
+                  key={index}
+                  event={event}
+                  userId={user?.id}
+                  setSnackbarData={setSnackbarData}
+                />
+              ))}
+            </Masonry>
+          </Stack>
         ) : (
           <Typography variant="subtitle1" color="textSecondary">
             No momento, não há eventos disponíveis. Volte em breve!
