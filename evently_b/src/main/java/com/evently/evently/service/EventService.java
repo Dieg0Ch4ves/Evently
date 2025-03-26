@@ -5,8 +5,11 @@ import com.evently.evently.dtos.EventRequestDTO;
 import com.evently.evently.dtos.EventResponseDTO;
 import com.evently.evently.entities.Event;
 import com.evently.evently.entities.User;
+import com.evently.evently.exceptions.UserNotFoundException;
 import com.evently.evently.repositories.EventRepository;
 import com.evently.evently.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class EventService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
 
     private final UserRepository userRepository;
 
@@ -31,7 +36,7 @@ public class EventService {
     public List<EventResponseDTO> getAllEvents() {
          return eventRepository.findAllWithRegistrations().stream()
                 .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public EventResponseDTO getEventById(Long id) {
@@ -45,14 +50,14 @@ public class EventService {
         List<Event> events = eventRepository.findByCreatedBy(user);
         return events.stream()
                 .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
-    public EventResponseDTO createEvent(UUID id, EventRequestDTO eventRequestDTO) throws Exception {
+    public EventResponseDTO createEvent(UUID id, EventRequestDTO eventRequestDTO) {
         User currentUser = userRepository.findById(id).orElse(null);
         if (currentUser == null) {
-            throw new Exception("Este usuário não foi encontrado!");
+            throw new UserNotFoundException("Este usuário não foi encontrado!");
         }
 
         Event event = new Event();
@@ -69,7 +74,7 @@ public class EventService {
                 byte[] imageConverted = Base64.getDecoder().decode(image);
                 event.setImage(imageConverted);
             } catch (Exception e) {
-                System.err.println("Erro ao tentar converter para Base64: " + e);
+                logger.info("Erro ao tentar converter para Base64: {}", e.getMessage());
             }
         } else {
             event.setImage(null);
@@ -98,8 +103,8 @@ public class EventService {
             try {
                 byte[] imageConverted = Base64.getDecoder().decode(image);
                 event.setImage(imageConverted);
-            } catch (Exception e) {
-                System.err.println("Erro ao tentar converter para Base64: " + e);
+            } catch (Exception e)  {
+                logger.info("Erro ao tentar converter para Base64: {}", e.getMessage());
             }
         } else {
             event.setImage(null);

@@ -1,9 +1,9 @@
 package com.evently.evently.service;
 
 
-import com.evently.evently.exceptions.EmailSendException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -29,11 +29,11 @@ public class EmailService {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new EmailSendException("Erro ao enviar e-mail de ativação");
+            throw new MailSendException("Erro ao enviar e-mail de ativação");
         }
     }
 
-    public void sendResetPasswordEmail(String to, String resetLink ) {
+    public void sendResetPasswordEmail(String to, String resetLink) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -45,7 +45,7 @@ public class EmailService {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new EmailSendException("Erro ao enviar e-mail de redefinição de senha");
+            throw new MailSendException("Erro ao enviar e-mail de redefinição de senha");
         }
     }
 
