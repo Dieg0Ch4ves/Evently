@@ -146,18 +146,30 @@ const Home = () => {
             <CircularProgress color="inherit" />
           </Backdrop>
         ) : filteredEvents.length !== 0 ? (
-          <Stack alignContent={"center"}>
-            <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={4}>
-              {filteredEvents.map((event, index) => (
-                <BoxEvent
-                  key={index}
-                  event={event}
-                  userId={user?.id}
-                  setSnackbarData={setSnackbarData}
-                />
-              ))}
-            </Masonry>
-          </Stack>
+          filteredEvents.length === 1 ? (
+            // Renderização especial para apenas 1 evento
+            <Stack alignItems="center" spacing={2}>
+              <BoxEvent
+                event={filteredEvents[0]}
+                userId={user?.id}
+                setSnackbarData={setSnackbarData}
+              />
+            </Stack>
+          ) : (
+            // Renderização normal com Masonry para múltiplos eventos
+            <Stack alignContent={"center"}>
+              <Masonry columns={{ xs: 1, sm: 2, md: 3 }} spacing={4}>
+                {filteredEvents.map((event, index) => (
+                  <BoxEvent
+                    key={index}
+                    event={event}
+                    userId={user?.id}
+                    setSnackbarData={setSnackbarData}
+                  />
+                ))}
+              </Masonry>
+            </Stack>
+          )
         ) : (
           <Typography variant="subtitle1" color="textSecondary">
             No momento, não há eventos disponíveis. Volte em breve!
