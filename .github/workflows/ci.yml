@@ -24,7 +24,7 @@ jobs:
 
       - name: Rodar testes do backend
         working-directory: ./evently_b
-        run: mvn test -Dspring.profiles.active=test
+        run: mvn clean package
 
   test-frontend:
     runs-on: ubuntu-latest
