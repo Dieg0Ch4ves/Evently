@@ -22,9 +22,9 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Construir e rodar testes do backend
+      - name: Rodar testes do backend
         working-directory: ./evently_b
-        run: mvn clean test
+        run: mvn test -Dspring.profiles.active=test
 
   test-frontend:
     runs-on: ubuntu-latest
