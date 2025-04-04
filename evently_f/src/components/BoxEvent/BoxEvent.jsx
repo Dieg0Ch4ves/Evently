@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import FormatDate from "../../utils/FormatDate";
 import { truncateDescription } from "../../utils/truncateDescription";
 import ConfirmDialog from "../ConfirmDialog/ConfirmDialog";
-import eventService from "../../api/eventService";
+import eventService from "@/api/eventService";
 
 const BoxEvent = ({ event, userId, setSnackbarData }) => {
   const [openConfirm, setOpenConfirm] = useState(false);

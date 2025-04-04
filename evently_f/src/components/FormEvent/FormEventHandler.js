@@ -1,4 +1,4 @@
-import EventService from "../../api/eventService";
+import EventService from "@/api/eventService";
 import { useAuth } from "../../hooks/useAuth";
 
 const FormEventHandlers = (event, setEvent, setPreview, setError) => {

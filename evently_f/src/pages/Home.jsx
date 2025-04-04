@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import eventService from "../api/eventService";
+import eventService from "@/api/eventService";
 import BoxEvent from "../components/BoxEvent/BoxEvent";
 import { useAuth } from "../hooks/useAuth";
 
