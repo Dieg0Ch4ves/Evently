@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import userService from "../api/userService";
+import userService from "@/api/userService";
 
 const ResetPassword = () => {
   const location = useLocation();

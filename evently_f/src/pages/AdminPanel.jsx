@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import userService from "../api/userService";
+import userService from "@/api/userService";
 import { Delete } from "@mui/icons-material";
 
 const AdminPanel = () => {

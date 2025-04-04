@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import userService from "../api/userService";
+import userService from "@/api/userService";
 
 const ActivateUser = () => {
   const location = useLocation();

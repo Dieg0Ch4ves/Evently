@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "./useAuth";
 import eventService from "@/api/eventService";
-import eventRegistrationService from "../api/eventRegistrationService";
-import userService from "../api/userService";
+import eventRegistrationService from "@/api/eventRegistrationService";
+import userService from "@/api/userService";
 
 const useEvent = () => {
   const { id } = useParams();

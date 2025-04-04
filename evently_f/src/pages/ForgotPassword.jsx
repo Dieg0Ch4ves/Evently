@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import userService from "../api/userService";
+import userService from "@/api/userService";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
