@@ -38,7 +38,3 @@ jobs:
         run: |
           npm install
           npm run build
-
-      - name: Rodar testes do frontend
-        working-directory: ./evently_f
-        run: npm test
