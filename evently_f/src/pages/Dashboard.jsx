@@ -16,7 +16,7 @@ import {
 import BoxEvent from "../components/BoxEvent/BoxEvent";
 import NewEvent from "../components/NewEvent/NewEvent";
 import { useAuth } from "../hooks/useAuth";
-import eventService from "../api/eventService";
+import eventService from "@/api/eventService";
 
 const Dashboard = () => {
   const [eventRegistrations, setEventRegistrations] = useState([]);
