@@ -39,7 +39,7 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO evently_postgresql_user;
 -- Dar acesso às sequences (necessário para IDs com sequence)
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO evently_postgresql_user;
 
-ALTER SCHEMA public OWNER TO postgres;
+ALTER SCHEMA public OWNER TO evently_postgresql_user;
 
 --
 -- TOC entry 4875 (class 0 OID 0)
@@ -67,7 +67,7 @@ CREATE TABLE public.activation_token (
 );
 
 
-ALTER TABLE public.activation_token OWNER TO postgres;
+ALTER TABLE public.activation_token OWNER TO evently_postgresql_user;
 
 --
 -- TOC entry 219 (class 1259 OID 58001)
@@ -87,7 +87,7 @@ CREATE TABLE public.event (
 );
 
 
-ALTER TABLE public.event OWNER TO postgres;
+ALTER TABLE public.event OWNER TO evently_postgresql_user;
 
 --
 -- TOC entry 218 (class 1259 OID 58000)
@@ -117,7 +117,7 @@ CREATE TABLE public.events_registrations (
 );
 
 
-ALTER TABLE public.events_registrations OWNER TO postgres;
+ALTER TABLE public.events_registrations OWNER TO evently_postgresql_user;
 
 --
 -- TOC entry 220 (class 1259 OID 58008)
@@ -150,7 +150,7 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
+ALTER TABLE public.users OWNER TO evently_postgresql_user;
 
 --
 -- TOC entry 4710 (class 2606 OID 57999)
