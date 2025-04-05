@@ -237,8 +237,6 @@ ALTER TABLE ONLY public.activation_token
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
 
-REVOKE USAGE ON SCHEMA public FROM PUBLIC;
-
 
 -- Completed on 2025-03-28 16:30:20
 
