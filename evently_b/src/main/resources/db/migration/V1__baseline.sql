@@ -28,6 +28,18 @@ SET row_security = off;
 
 CREATE SCHEMA IF NOT EXISTS public;
 
+-- Permitir uso do schema public
+GRANT USAGE ON SCHEMA public TO evently_postgresql_user;
+
+-- Permitir criar objetos no schema
+GRANT CREATE ON SCHEMA public TO evently_postgresql_user;
+
+-- Dar acesso a todas as tabelas já criadas
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO evently_postgresql_user;
+
+-- Dar acesso às sequences (necessário para IDs com sequence)
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO evently_postgresql_user;
+
 ALTER SCHEMA public OWNER TO postgres;
 
 --
