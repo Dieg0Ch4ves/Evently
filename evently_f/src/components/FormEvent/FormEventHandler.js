@@ -11,8 +11,6 @@ const FormEventHandlers = (event, setEvent, setPreview, setError) => {
       ...event,
       [name]: value,
     });
-
-    console.log(event);
   };
 
   const handleFileChange = (e) => {
@@ -50,7 +48,7 @@ const FormEventHandlers = (event, setEvent, setPreview, setError) => {
   const handleSubmit = async () => {
     try {
       const response = await handlePostEvent(user.id, event);
-      console.log(response);
+      return response;
     } catch (error) {
       console.error("ERRO: ", error);
     }

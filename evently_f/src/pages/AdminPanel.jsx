@@ -24,7 +24,6 @@ const AdminPanel = () => {
     try {
       const fetchData = async () => {
         const response = await userServiceMemo.handleGetAllUsers();
-        console.log(response);
         setUsers(response);
       };
       fetchData();
@@ -41,8 +40,8 @@ const AdminPanel = () => {
     if (confirmDelete) {
       try {
         const response = await userServiceMemo.handleDeleteUserById(id);
-        console.log(response);
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+        return response;
       } catch (error) {
         console.error(error);
       }

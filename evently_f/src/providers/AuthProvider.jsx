@@ -79,7 +79,6 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Erro ao realizar o cadastro.");
       }
     } catch (error) {
-      console.log(error);
       throw new Error(error.response?.data || "Erro ao fazer cadastro");
     }
   };

@@ -71,8 +71,6 @@ const ResetPassword = () => {
         formData.confirmPassword
       );
 
-      console.log(response);
-
       if (response.status === 200) {
         setSnackbar({
           open: true,

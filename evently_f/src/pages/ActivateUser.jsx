@@ -41,7 +41,6 @@ const ActivateUser = () => {
 
     const response = await handleActivateUserByToken(token);
 
-    console.log(response);
     if (response.status === 200) {
       setSnackbarData({
         open: true,

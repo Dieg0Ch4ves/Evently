@@ -64,8 +64,6 @@ const Login = () => {
     if (validate()) {
       const response = await login(formData);
 
-      console.log(response);
-
       if (response?.status !== 200) {
         setSnackbar({
           open: true,

@@ -19,7 +19,6 @@ const NewEvent = ({ open, onClose, setSnackbarData, addEventToList }) => {
   const handleSubmit = async () => {
     try {
       const response = await handlePostEvent(user.id, event);
-      console.log(response);
       setSnackbarData({
         open: true,
         message: "Evento criado com sucesso!",

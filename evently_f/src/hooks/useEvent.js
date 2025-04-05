@@ -54,7 +54,6 @@ const useEvent = () => {
           return response;
         })
       );
-      console.log(users);
       setUsers(users);
     };
 
